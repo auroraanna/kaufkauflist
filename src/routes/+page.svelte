@@ -1,45 +1,66 @@
 <script>
+	import PocketBase from 'pocketbase';
+
+	// The app won't work without you setting `POCKETBASE_URL` with dotenv. The default pocketbase URL is `http://127.0.0.1:8090`.
+	const client = new PocketBase(import.meta.env.VITE_POCKETBASE_URL);
+
 	$: items = [];
 
-	function toggleItems() {
-		for (let item of items) {
-			if (item.done) {
-				item.done = false;
-			} else {
-				item.done = true;
-			}
-		}
-		items = items;
+	async function getItems() {
+		items = await client.collection('items').getFullList(1, 20, {
+			sort: '-done',
+		});
 	}
 
-	function checkItems(check) {
-		for (let item of items) {
+	getItems();
+
+	async function toggleItems(toBeToggledItems) {
+		for (let item of toBeToggledItems) {
+			if (item.done) {
+				await client.collection('items').update(item.id, { done: false, name: item.name });
+			} else {
+				await client.collection('items').update(item.id, { done: true, name: item.name });
+			}
+		}
+		getItems();
+	}
+
+	async function checkItem(item, check) {
+		// Only the database needs to be updated because the item is already set done by `bind:checked={item.done}`.
+		await client.collection('items').update(item.id, { done: item.done, name: item.name });
+	}
+
+	async function checkItems(toBeCheckedItems, check) {
+		for (let item of toBeCheckedItems) {
 			if (check) {
 				item.done = true;
-				console.log('item done');
+				await client.collection('items').update(item.id, { done: true, name: item.name });
 			} else {
 				item.done = false;
-				console.log('item undone');
+				await client.collection('items').update(item.id, { done: false, name: item.name });
 			}
 		}
+		// `getItems()` is not needed here because the items were already checked locally.
 		items = items;
 	}
 
-	function removeItem(i) {
-		items.splice(i, 1);
-		items = items;
+	async function deleteItem(id) {
+		await client.collection('items').delete(id);
+		getItems();
 	}
 
-	function removeItems(s, e) {
-		items.splice(s, e);
-		items = items;
+	async function deleteItems(toBeDeletedItems) {
+		for (let item of toBeDeletedItems) {
+			await client.collection('items').delete(item.id);
+		}
+		getItems();
 	}
 
 	let answer = '';
 
-	function addItem() {
-		items.push({ done: false, name: answer });
-		items = items;
+	async function createItem() {
+		await client.collection('items').create({ done: false, name: answer });
+		getItems();
 		console.log(items);
 	}
 </script>
@@ -49,20 +70,20 @@
 <fieldset>
 	<legend>Controls</legend>
 
-	<button on:click={() => checkItems(true)}> Check all items </button>
+	<button on:click={() => checkItems(items, true)}>Check all items</button>
 
-	<button on:click={() => checkItems(false)}> Uncheck all items </button>
+	<button on:click={() => checkItems(items, false)}>Uncheck all items</button>
 
-	<button on:click={toggleItems}> Toggle all items </button>
+	<button on:click={() => toggleItems(items)}>Toggle all items</button>
 
-	<button on:click={() => removeItem(0)}> Remove first item </button>
+	<button on:click={() => deleteItem(items[0].id)}>Delete first item</button>
 
-	<button on:click={() => removeItems(0, items.length)}> Remove all items </button>
+	<button on:click={() => deleteItems(items)}>Delete all items</button>
 
-	<form on:submit|preventDefault={addItem}>
+	<form on:submit|preventDefault={createItem}>
 		<input bind:value={answer} />
 
-		<button disabled={!answer} type="submit"> Add item </button>
+		<button disabled={!answer} type="submit">Create item</button>
 	</form>
 </fieldset>
 
@@ -70,11 +91,11 @@
 	<legend>Items</legend>
 
 	<ol>
-		{#each items as item, i}
+		{#each items as item}
 			<li>
-				<input type="checkbox" id={i} name={item.name} bind:checked={item.done} />
-				<label for={i}>{item.name}</label>
-				<button on:click={() => removeItem(i)}> Remove item </button>
+				<input type="checkbox" id={item.id} name={item.name} bind:checked={item.done} on:change={() => checkItem(item, item.done)}/>
+				<label for={item.id}>{item.name}</label>
+				<button on:click={() => deleteItem(item.id)}>Delete item</button>
 			</li>
 		{/each}
 	</ol>
