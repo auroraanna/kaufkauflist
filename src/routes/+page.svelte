@@ -72,8 +72,6 @@
 	}
 </script>
 
-<h1>kaufkauflist</h1>
-
 <fieldset>
 	<legend>Controls</legend>
 
