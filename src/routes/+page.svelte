@@ -1,5 +1,6 @@
 <script>
 	import PocketBase from 'pocketbase';
+	import { onMount } from 'svelte';
 
 	// The app won't work without you setting `POCKETBASE_URL` with dotenv. The default pocketbase URL is `http://127.0.0.1:8090`.
 	const client = new PocketBase(import.meta.env.VITE_POCKETBASE_URL);
@@ -13,6 +14,17 @@
 	}
 
 	getItems();
+	
+	async function updateItems() {
+		await client.realtime.subscribe('items', function (e) {
+			getItems();
+		});
+	}
+
+	// Only runs when client loads site. We don't want the server listening for changes to the databse.
+	onMount(async () => {
+		updateItems();
+	});
 
 	async function toggleItems(toBeToggledItems) {
 		for (let item of toBeToggledItems) {
@@ -22,7 +34,6 @@
 				await client.collection('items').update(item.id, { done: true, name: item.name });
 			}
 		}
-		getItems();
 	}
 
 	async function checkItem(item, check) {
@@ -46,22 +57,18 @@
 
 	async function deleteItem(id) {
 		await client.collection('items').delete(id);
-		getItems();
 	}
 
 	async function deleteItems(toBeDeletedItems) {
 		for (let item of toBeDeletedItems) {
 			await client.collection('items').delete(item.id);
 		}
-		getItems();
 	}
 
 	let answer = '';
 
 	async function createItem() {
 		await client.collection('items').create({ done: false, name: answer });
-		getItems();
-		console.log(items);
 	}
 </script>
 
