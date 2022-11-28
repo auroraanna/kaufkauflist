@@ -3,17 +3,19 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
-		"db": "pocketbase serve",
+		// Build the project to HTML files, etc.
 		"build": "vite build",
-		"preview": "vite preview",
+		// Start the database.
+		"db": "pocketbase serve",
+		// Run the development webserver with the files from build.
+		"dev": "caddy run",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "next",
+		"@sveltejs/adapter-static": "next",
 		"@sveltejs/kit": "next",
 		"eslint": "^8.16.0",
 		"eslint-config-prettier": "^8.3.0",
