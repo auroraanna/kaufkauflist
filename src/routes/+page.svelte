@@ -29,9 +29,9 @@
 	async function toggleItems(toBeToggledItems) {
 		for (let item of toBeToggledItems) {
 			if (item.done) {
-				await client.collection('items').update(item.id, { done: false, name: item.name });
+				await client.collection('items').update(item.id, {done: false});
 			} else {
-				await client.collection('items').update(item.id, { done: true, name: item.name });
+				await client.collection('items').update(item.id, {done: true});
 			}
 		}
 	}
@@ -45,10 +45,10 @@
 		for (let item of toBeCheckedItems) {
 			if (check) {
 				item.done = true;
-				await client.collection('items').update(item.id, { done: true, name: item.name });
+				await client.collection('items').update(item.id, {done: true});
 			} else {
 				item.done = false;
-				await client.collection('items').update(item.id, { done: false, name: item.name });
+				await client.collection('items').update(item.id, {done: false});
 			}
 		}
 		// `getItems()` is not needed here because the items were already checked locally.
