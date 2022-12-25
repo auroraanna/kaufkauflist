@@ -150,6 +150,8 @@
 
 	<button on:click={() => deleteItem(items[0].id)}>Delete first item</button>
 
+	<button on:click={() => deleteItem(items[items.length - 1].id)}>Delete last item</button>
+
 	<button on:click={() => deleteItems(items)}>Delete all items</button>
 
 	<form on:submit|preventDefault={createItem}>
