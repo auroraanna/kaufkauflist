@@ -5,27 +5,23 @@ import { writable } from 'svelte/store';
 const client = new PocketBase(import.meta.env.VITE_POCKETBASE_URL);
 
 let user;
+let userPassword;
 
 let items = [];
 const itemsStore = writable(items);
 itemsStore.subscribe((data) => {
 	items = data;
 })
-let listRecord = {items: []};
+let listRecord = {id: '', items: []};
 
-async function init() {
+async function initExisting() {
 	const params = new URLSearchParams(window.location.search);
-	const userId = params.get("user");
-	console.log(`Set user to: ${userId}`);
-	const userPassword = params.get("password");
+	const username = params.get("user");
+	console.log(`Set user to: ${username}`);
+	userPassword = params.get("password");
 	console.log(`Set password to: ${userPassword}`);
 
-	const userApiResponse = await client.collection('users').authWithPassword(
-		userId,
-		userPassword
-	);
-	user = userApiResponse.record;
-	console.log(user);
+	await getUser(username, userPassword);
 
 	updateItems();
 }
@@ -59,6 +55,18 @@ async function getItems() {
 		};
 		listRecord = record;
 	}, 0);
+}
+
+async function getUser(username, userPassword) {
+	const userApiResponse = await client.collection('users').authWithPassword(
+		username,
+		userPassword
+	);
+	console.log("userApiResponse");
+	console.log(userApiResponse);
+	user = userApiResponse.record;
+	console.log("user");
+	console.log(user);
 }
 
 async function updateItems() {
@@ -125,6 +133,44 @@ function generatePassword() {
 	).join('');
 }
 
+async function createUser() {
+	userPassword = generatePassword();
+	const data = {
+		username: generatePassword(),
+		password: userPassword,
+		passwordConfirm: userPassword,
+		key: generatePassword()
+	};
+	user = await client.collection('users').create(data);
+	console.log("Created user:");
+	console.log(user);
+	console.log(`userPassword: ${userPassword}`);
+	await getUser(user.username, userPassword);
+}
+
+async function createList() {
+	await createUser();
+
+	const listData = {
+		items: items,
+		user: user.id,
+		key: user.key
+	};
+	console.log(listData);
+	listRecord = await client.collection('lists').create(listData);
+	console.log("listRecord");
+	console.log(listRecord);
+
+	const userData = {
+		list: listRecord.id
+	};
+	user = await client.collection('users').update(user.id, userData);
+
+	let url = `/lists.html?user=${user.username}&password=${userPassword}`;
+	console.log(url);
+	window.location.replace(url);
+}
+
 async function createItem(answer) {
 	const createdItemRecord = await client.collection('items').create({ done: false, name: answer, list: user.list });
 
@@ -138,4 +184,4 @@ async function createItem(answer) {
 	client.collection('lists').update(user.list, data);
 }
 
-export { init, getItems, updateItems, toggleItems, checkItem, checkItems, deleteItem, deleteItems, createItem, itemsStore };
+export { initExisting, getItems, updateItems, toggleItems, checkItem, checkItems, deleteItem, deleteItems, createList, createItem, itemsStore };
