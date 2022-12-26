@@ -20,8 +20,8 @@
 	<button on:click={() => deleteItems(items)}>Delete all items</button>
 	<button on:click={() => deleteList()}>Delete list</button>
 	<form on:submit|preventDefault={createItem(answer)}>
-		<label>Item name</label>
-		<input type="text" bind:value={answer} />
+		<label for="createItem">Item name</label>
+		<input type="text" id="createItem" bind:value={answer} />
 		<button disabled={!answer} type="submit">Create item</button>
 	</form>
 </fieldset>
