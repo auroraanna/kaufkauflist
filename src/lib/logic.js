@@ -120,6 +120,16 @@ async function deleteItems(toBeDeletedItems) {
 	}
 }
 
+async function deleteList() {
+	if (confirm("Do you really want to delete the list? There is no way of recovering the list.")) {
+		await deleteItems(items);
+		await client.collection('lists').delete(user.list);
+		await client.collection('users').delete(user.id);
+
+		window.location.replace('/');
+	}
+}
+
 function generatePassword() {
 	// Cryptographically secure password generator copied from <https://stackoverflow.com/a/29770068>. The password is about 50 characters long.
 	return window.crypto.getRandomValues(new BigUint64Array(4)).reduce(
@@ -184,4 +194,4 @@ async function createItem(answer) {
 	client.collection('lists').update(user.list, data);
 }
 
-export { initExisting, getItems, updateItems, toggleItems, checkItem, checkItems, deleteItem, deleteItems, createList, createItem, itemsStore };
+export { initExisting, getItems, updateItems, toggleItems, checkItem, checkItems, deleteItem, deleteItems, deleteList, createList, createItem, itemsStore };

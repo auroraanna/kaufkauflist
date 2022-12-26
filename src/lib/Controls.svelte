@@ -1,5 +1,5 @@
 <script>
-	import { toggleItems, checkItems, deleteItem, deleteItems, createItem, itemsStore } from '$lib/logic.js';
+	import { toggleItems, checkItems, deleteItem, deleteItems, deleteList, createItem, itemsStore } from '$lib/logic.js';
 
 	let items = [];
 	itemsStore.subscribe((data) => {
@@ -18,6 +18,7 @@
 	<button on:click={() => deleteItem(items[0].id)}>Delete first item</button>
 	<button on:click={() => deleteItem(items[items.length - 1].id)}>Delete last item</button>
 	<button on:click={() => deleteItems(items)}>Delete all items</button>
+	<button on:click={() => deleteList()}>Delete list</button>
 	<form on:submit|preventDefault={createItem(answer)}>
 		<label>Item name</label>
 		<input type="text" bind:value={answer} />
