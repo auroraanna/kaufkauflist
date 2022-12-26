@@ -1,5 +1,6 @@
 <style>
 	:global(:root) {
+		font-size: 1.1rem;
 		font-family: 'Google Sans', Inter, Roboto, 'Open Sans', sans-serif;
 		font-variant-ligatures: common-ligatures;
 		font-variant-numeric: slashed-zero;
@@ -24,18 +25,34 @@
 		border-style: solid;
 	}
 
+	:global(label) {
+		vertical-align: middle;
+	}
+
 	:global(button) {
+		font-size: 1.1rem;
 		background-color: var(--secondary_container);
 		color: var(--on_secondary_container);
 		border-radius: 0.2rem;
 		border: none;
+		margin: 0.2rem;
+		padding: 0.2rem;
+		min-width: 5rem;
+		min-height: 2.74rem;
+		vertical-align: middle;
 	}
 
 	:global(input[type=text]) {
+		font-size: 1.1rem;
 		background-color: var(--surface_variant);
 		color: var(--on_surface_variant);
 		border-radius: 0.2rem;
 		border: none;
+		margin: 0.2rem;
+		padding: 0.2rem;
+		min-width: 5rem;
+		min-height: 1rem;
+		vertical-align: middle;
 	}
 
 	:global(input[type=checkbox]) {
@@ -43,6 +60,9 @@
 		color: var(--primary);
 		border-radius: 0.2rem;
 		border: none;
+		width: 1.5rem;
+		height: 1.5rem;
+		vertical-align: middle;
 	}
 
 	:global(input[type=checkbox]:checked) {
