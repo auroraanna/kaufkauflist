@@ -13,20 +13,14 @@
 	<legend>Controls</legend>
 
 	<button on:click={() => checkItems(items, true)}>Check all items</button>
-
 	<button on:click={() => checkItems(items, false)}>Uncheck all items</button>
-
 	<button on:click={() => toggleItems(items)}>Toggle all items</button>
-
 	<button on:click={() => deleteItem(items[0].id)}>Delete first item</button>
-
 	<button on:click={() => deleteItem(items[items.length - 1].id)}>Delete last item</button>
-
 	<button on:click={() => deleteItems(items)}>Delete all items</button>
-
 	<form on:submit|preventDefault={createItem(answer)}>
+		<label>Item name</label>
 		<input type="text" bind:value={answer} />
-
 		<button disabled={!answer} type="submit">Create item</button>
 	</form>
 </fieldset>
