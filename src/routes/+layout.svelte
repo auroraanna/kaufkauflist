@@ -42,6 +42,11 @@
 		vertical-align: middle;
 	}
 
+	:global(button:disabled) {
+		background-color: var(--outline);
+		color: var(--on_backround);
+	}
+
 	:global(input[type=text]) {
 		font-size: 1.1rem;
 		background-color: var(--surface_variant);

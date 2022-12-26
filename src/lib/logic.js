@@ -51,8 +51,9 @@ async function getItems() {
 					console.log(`Subscribed to item ${item.id}.`);
 				};
 			};
-
 			itemsStore.update((currentData) => record.expand.items);
+		} else {
+			itemsStore.update((currentData) => []);
 		};
 		listRecord = record;
 	}, 0);
