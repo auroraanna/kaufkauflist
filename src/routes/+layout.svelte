@@ -51,7 +51,15 @@
 		border-radius: 0.2rem;
 		border: none;
 	}
-	
+
+	:global(.important) {
+		background-color: var(--error);
+		color: var(--on_error);
+		padding: 0.4rem;
+		border-radius: 0.4rem;
+		border: none;
+	}
+
 	@media (prefers-color-scheme: light) {
 		:global(:root) {
 			--primary: #a500cf;
