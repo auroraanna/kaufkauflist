@@ -9,6 +9,14 @@
 		width: fit-content;
 	}
 
+	:global(a) {
+		color: var(--primary);
+	}
+
+	:global(a:hover) {
+		color: var(--on_primary_container);
+	}
+
 	:global(fieldset) {
 		border-color: var(--on_background);
 		border-width: 0.1rem;
