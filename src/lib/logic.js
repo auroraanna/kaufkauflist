@@ -11,7 +11,7 @@ let items = [];
 const itemsStore = writable(items);
 itemsStore.subscribe((data) => {
 	items = data;
-})
+});
 let listRecord = {id: '', items: []};
 
 async function initExisting() {
@@ -28,10 +28,8 @@ async function initExisting() {
 
 async function getItems() {
 	setTimeout(async function cb() {
-		console.log("Using list…");
 		const record = await client.collection('lists').getOne(user.list, {
 			expand: 'items',
-			key: user.key
 		});
 
 		// Subscribe to not yet subscribed items in list and make record and items globally available.
@@ -40,6 +38,7 @@ async function getItems() {
 			itemIds.push(item.id);
 		};
 		console.log(record);
+		console.log("items in record.expand exists:");
 		console.log("items" in record.expand);
 		if ("items" in record.expand) {
 			for (const item of record.expand.items) {
