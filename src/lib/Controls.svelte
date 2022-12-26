@@ -25,7 +25,7 @@
 	<button on:click={() => deleteItems(items)}>Delete all items</button>
 
 	<form on:submit|preventDefault={createItem(answer)}>
-		<input bind:value={answer} />
+		<input type="text" bind:value={answer} />
 
 		<button disabled={!answer} type="submit">Create item</button>
 	</form>
