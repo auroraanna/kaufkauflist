@@ -43,8 +43,10 @@ async function getItems() {
 		if ("items" in record.expand) {
 			for (const item of record.expand.items) {
 				if (itemIds.includes(item.id) == false) {
-					client.collection("items").subscribe(item.id, function (e) {
-						getItems();
+					client.collection("items").subscribe(item.id, async function (e) {
+						if (!(e.action == "delete")) {
+							await getItems();
+						};
 					});
 					console.log(`Subscribed to item ${item.id}.`);
 				};
