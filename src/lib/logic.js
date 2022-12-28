@@ -122,6 +122,25 @@ async function deleteItems(toBeDeletedItems) {
 	}
 }
 
+function anyCheckedItems(items) {
+	for (const item of items) {
+		if (item.done) {
+			return true;
+			break;
+		}
+	}
+
+	return false;
+}
+
+async function deleteCheckedItems(items) {
+	for (const item of items) {
+		if (item.done) {
+			client.collection('items').delete(item.id);
+		}
+	}
+}
+
 async function deleteList() {
 	if (confirm("Do you really want to delete the list? There is no way of recovering the list.")) {
 		await deleteItems(items);
@@ -196,4 +215,4 @@ async function createItem(answer) {
 	client.collection('lists').update(user.list, data);
 }
 
-export { initExisting, getItems, updateItems, toggleItems, checkItem, checkItems, deleteItem, deleteItems, deleteList, createList, createItem, itemsStore };
+export { initExisting, getItems, updateItems, toggleItems, checkItem, checkItems, deleteItem, deleteItems, anyCheckedItems, deleteCheckedItems, deleteList, createList, createItem, itemsStore };
