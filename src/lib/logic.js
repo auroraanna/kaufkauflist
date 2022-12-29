@@ -17,9 +17,9 @@ let listRecord = {id: '', items: []};
 async function initExisting() {
 	const params = new URLSearchParams(window.location.search);
 	const username = params.get("user");
-	console.log(`Set user to: ${username}`);
+	console.log(`Got username from URL query parameters: ${username}`);
 	userPassword = params.get("password");
-	console.log(`Set password to: ${userPassword}`);
+	console.log(`Got password from URL query parameters: ${userPassword}`);
 
 	await getUser(username, userPassword);
 
@@ -48,7 +48,7 @@ async function getItems() {
 							await getItems();
 						};
 					});
-					console.log(`Subscribed to item ${item.id}.`);
+					console.log(`Subscribed to item with id: ${item.id}`);
 				};
 			};
 			itemsStore.update((currentData) => record.expand.items);
@@ -64,11 +64,8 @@ async function getUser(username, userPassword) {
 		username,
 		userPassword
 	);
-	console.log("userApiResponse");
-	console.log(userApiResponse);
+	console.log("API response to user authentication:", userApiResponse);
 	user = userApiResponse.record;
-	console.log("user");
-	console.log(user);
 }
 
 async function updateItems() {
@@ -173,9 +170,8 @@ async function createUser() {
 		key: generatePassword()
 	};
 	user = await client.collection('users').create(data);
-	console.log("Created user:");
-	console.log(user);
-	console.log(`userPassword: ${userPassword}`);
+	console.log("Created user:", user);
+	console.log(`Password: ${userPassword}`);
 	await getUser(user.username, userPassword);
 }
 
@@ -187,10 +183,9 @@ async function createList() {
 		user: user.id,
 		key: user.key
 	};
-	console.log(listData);
+	console.log("Data of to be created list:", listData);
 	listRecord = await client.collection('lists').create(listData);
-	console.log("listRecord");
-	console.log(listRecord);
+	console.log("Current list:", listRecord);
 
 	const userData = {
 		list: listRecord.id
@@ -198,15 +193,15 @@ async function createList() {
 	user = await client.collection('users').update(user.id, userData);
 
 	let url = `/lists.html?user=${user.username}&password=${userPassword}`;
-	console.log(url);
+	console.log("Going just created list:", url);
 	window.location.replace(url);
 }
 
 async function createItem(answer) {
 	const createdItemRecord = await client.collection('items').create({ done: false, name: answer, list: user.list });
 
-	console.log(createdItemRecord);
-	console.log(listRecord);
+	console.log("Created item:", createdItemRecord);
+	console.log("Current list", listRecord);
 
 	listRecord.items.push(createdItemRecord.id);
 	const data = {
