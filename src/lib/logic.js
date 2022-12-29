@@ -198,16 +198,22 @@ async function createList() {
 }
 
 async function createItem(answer) {
-	const createdItemRecord = await client.collection('items').create({ done: false, name: answer, list: user.list });
+	try {
+		const createdItemRecord = await client.collection('items').create({ done: false, name: answer, list: user.list });
 
-	console.log("Created item:", createdItemRecord);
-	console.log("Current list", listRecord);
+		console.log("Created item:", createdItemRecord);
+		console.log("Current list", listRecord);
 
-	listRecord.items.push(createdItemRecord.id);
-	const data = {
-		items: listRecord.items
-	};
-	client.collection('lists').update(user.list, data);
+		listRecord.items.push(createdItemRecord.id);
+		const data = {
+			items: listRecord.items
+		};
+
+		client.collection('lists').update(user.list, data);
+	} catch (error) {
+		console.error(error);
+		alert("You can't create items this fast. Slow down!");
+	}
 }
 
 export { initExisting, getItems, updateItems, toggleItems, checkItem, checkItems, deleteItem, deleteItems, anyCheckedItems, deleteCheckedItems, deleteList, createList, createItem, itemsStore };
