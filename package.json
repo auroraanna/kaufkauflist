@@ -18,6 +18,7 @@
 		"SvelteKit"
 	],
 	"author": "Anna Aurora",
+	"license": "MIT",
 	"scripts": {
 		"build": "vite build",
 		"db": "pocketbase serve",
