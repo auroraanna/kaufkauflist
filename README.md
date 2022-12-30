@@ -1,4 +1,4 @@
-# kaufkauflist 🛒
+# kaufkauflist /kaʊ̯fkaʊ̯flɪst/
 
 ## License
 
