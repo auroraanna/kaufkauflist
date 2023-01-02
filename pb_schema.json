@@ -112,7 +112,7 @@
     ],
     "listRule": null,
     "viewRule": "@request.auth.key = list.key",
-    "createRule": "",
+    "createRule": "@request.auth.key = @collection.users.key",
     "updateRule": "@request.auth.key = list.key",
     "deleteRule": "@request.auth.key = list.key",
     "options": {}
@@ -129,9 +129,9 @@
         "type": "relation",
         "system": false,
         "required": false,
-        "unique": true,
+        "unique": false,
         "options": {
-          "maxSelect": null,
+          "maxSelect": 500,
           "collectionId": "pllvur3w0i0f85c",
           "cascadeDelete": false
         }
