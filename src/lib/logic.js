@@ -212,6 +212,9 @@ async function createItem(item) {
 		client.collection('lists').update(user.list, data);
 	} catch (error) {
 		console.error(error);
+		alert("The item was not created. You might not be able to create items this fast or the item name might be too long.");
+	}
+}
 
 async function importItemsJson(jsonItems) {
 	console.log("jsonItems", jsonItems);
