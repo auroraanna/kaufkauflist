@@ -197,9 +197,9 @@ async function createList() {
 	window.location.replace(url);
 }
 
-async function createItem(answer) {
+async function createItem(item) {
 	try {
-		const createdItemRecord = await client.collection('items').create({ done: false, name: answer, list: user.list });
+		const createdItemRecord = await client.collection('items').create({ done: item.done, name: item.name, list: user.list });
 
 		console.log("Created item:", createdItemRecord);
 		console.log("Current list", listRecord);
@@ -212,8 +212,34 @@ async function createItem(answer) {
 		client.collection('lists').update(user.list, data);
 	} catch (error) {
 		console.error(error);
-		alert("You can't create items this fast. Slow down!");
+
+async function importItemsJson(jsonItems) {
+	console.log("jsonItems", jsonItems);
+	const parsedItems = JSON.parse(jsonItems);
+	console.log("parsedItems", parsedItems);
+
+	for (const item of parsedItems) {
+		await createItem({name: item.name, done: item.done});
 	}
 }
 
-export { initExisting, getItems, updateItems, toggleItems, checkItem, checkItems, deleteItem, deleteItems, anyCheckedItems, deleteCheckedItems, deleteList, createList, createItem, itemsStore };
+async function importItemsFiles(jsonFiles) {
+	console.log("Imported files:", jsonFiles);
+	for (const file of jsonFiles) {
+		await importItemsJson(await file.text());
+	}
+}
+
+function downloadItemsFile(items) {
+	const jsonItems = JSON.stringify(items);
+
+	// The following a hack and Anna Aurora wanted to use a better solution but she couldn't get the `download()` function of the [`downloads`](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/downloads) API to work and it's not supported widely either.
+	// This creates an invisible anchor element with the JSON encoded as base64 into a URI as it's `href`. Then the anchor is clicked and removed.
+	var downloadElement = document.createElement('a');downloadElement.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(jsonItems));
+	downloadElement.setAttribute('download', 'items.json');
+	document.body.appendChild(downloadElement);
+	downloadElement.click();
+	document.body.removeChild(downloadElement);
+}
+
+export { initExisting, getItems, updateItems, toggleItems, checkItem, checkItems, deleteItem, deleteItems, anyCheckedItems, deleteCheckedItems, deleteList, createList, createItem, importItemsFiles, downloadItemsFile, itemsStore };
