@@ -3,19 +3,23 @@
 The following instructions are catered to people using [the Nix package manager](https://nixos.org/). You will need to have Nix installed or install the dependencies with a different package manager.
 
 First of all, in this project's directory open it's Nix shell (with the development dependencies of this project) with
+
 ```bash
 nix-shell
 ```
+
 The following sections will have commands to be run in this shell.
 
 ## Building
 
 This will install the dependencies required for building:
+
 ```bash
 npm install
 ```
 
 This will build the HTML files, etc. into the `build` directory:
+
 ```bash
 npm run build
 ```
@@ -27,6 +31,7 @@ npm run build
 #### Web server
 
 To run the web server ([Caddy](https://caddyserver.com/)) while developing (The web server will only be able to serve files if you [build](#building) before.):
+
 ```bash
 caddy run
 ```
@@ -34,12 +39,15 @@ caddy run
 #### Database
 
 It won't quite work without also starting the database ([PocketBase](https://pocketbase.io)):
+
 ```bash
 pocketbase serve
 ```
+
 though.
 
 On first start, PocketBase will need to be set up:
+
 1. Go to <http://localhost:8090/_/> (PocketBase's web interface) and create an admin account.
 2. Under <http://localhost:8090/_/#/settings/import-collections>, import `pb_schema.json`.
 

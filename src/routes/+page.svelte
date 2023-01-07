@@ -3,4 +3,3 @@
 </script>
 
 <button on:click={() => createList()}>Create list</button>
-

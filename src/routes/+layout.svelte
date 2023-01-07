@@ -1,10 +1,12 @@
+<slot />
+
 <style>
 	:global(:root) {
 		font-size: 1.1rem;
 		font-family: 'Google Sans', Inter, Roboto, 'Open Sans', sans-serif;
 		font-variant-ligatures: common-ligatures;
 		font-variant-numeric: slashed-zero;
-		line-height: 1.5; 
+		line-height: 1.5;
 		overflow-wrap: anywhere;
 		background-color: var(--background);
 		color: var(--on_background);
@@ -58,7 +60,7 @@
 		border-color: var(--disabled_button);
 	}
 
-	:global(input[type=text], input[type=file]) {
+	:global(input[type='text'], input[type='file']) {
 		font-size: 1.1rem;
 		background-color: var(--on_input);
 		color: var(--input);
@@ -73,14 +75,14 @@
 		vertical-align: middle;
 	}
 
-	:global(input[type=checkbox]) {
+	:global(input[type='checkbox']) {
 		border-radius: 0.2rem;
 		width: 1.5rem;
 		height: 1.5rem;
 		vertical-align: middle;
 	}
 
-	:global(input[type=checkbox]:checked) {
+	:global(input[type='checkbox']:checked) {
 		border-radius: 0.2rem;
 	}
 
@@ -128,6 +130,3 @@
 		}
 	}
 </style>
-
-<slot />
-

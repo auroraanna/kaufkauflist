@@ -3,9 +3,9 @@
 	"version": "1.0.0",
 	"description": "A to-do list for shopping or other use cases",
 	"homepage": "https://codeberg.org/annaaurora/kaufkauflist",
-	"bugs": { 
-		"url" : "https://codeberg.org/annaaurora/kaufkauflist/issues",
-		"email" : "anna@annaaurora.eu"
+	"bugs": {
+		"url": "https://codeberg.org/annaaurora/kaufkauflist/issues",
+		"email": "anna@annaaurora.eu"
 	},
 	"repository": {
 		"type": "git",
