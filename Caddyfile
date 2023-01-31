@@ -3,15 +3,15 @@
 }
 
 http://localhost:60000 {
+	encode zstd gzip
 	handle /api/* {
-		reverse_proxy /api/* localhost:8090
+		reverse_proxy localhost:8090
 	}
 	handle {
-		root * build # If kaufkauflist is installed from nixpkgs you should replace `build` with `${pkgs.kaufkauflist}/website` in your Caddy config.
+		root * build # If kaufkauflist is installed from nixpkgs you should replace `build` with `${pkgs.kaufkauflist}/share/kaufkauflist` in your Caddy config.
 		file_server
-		encode zstd gzip
+		header /_app/immutable/* Cache-Control=31536000 # Files in this directory get a new hash suffix when they are updated, meaning they can be cached for a long time.
 	}
-	header /_app/immutable/* Cache-Control=31536000 # Files in this directory get a new hash suffix when they are updated, meaning they can be cached for a long time.
 	header {
 		Permissions-Policy "accelerometer=(), autoplay=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=()"
 		Content-Security-Policy "default-src 'none'; style-src 'self'; img-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self'; base-uri 'self'; frame-ancestors 'none'"
