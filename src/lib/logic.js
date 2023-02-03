@@ -4,31 +4,31 @@ import { writable } from 'svelte/store';
 // The app won't work without you setting `VITE_POCKETBASE_URL` with dotenv. The default pocketbase URL is `http://127.0.0.1:8090`.
 const client = new PocketBase(import.meta.env.VITE_POCKETBASE_URL);
 
-let user;
-let userPassword;
+let list;
+let listPassword;
 
 let items = [];
 const itemsStore = writable(items);
 itemsStore.subscribe((data) => {
 	items = data;
 });
-let listRecord = { id: '', items: [] };
 
 async function initExisting() {
 	const params = new URLSearchParams(window.location.search);
-	const username = params.get('user');
-	console.log(`Got username from URL query parameters: ${username}`);
-	userPassword = params.get('password');
-	console.log(`Got password from URL query parameters: ${userPassword}`);
+	const username = params.get('list');
+	console.log('Got list username from URL query parameters:', username);
+	listPassword = params.get('password');
+	console.log('Got password from URL query parameters:', listPassword);
 
-	await getUser(username, userPassword);
+	await authorize(username, listPassword);
 
 	updateItems();
 }
 
 async function getItems() {
+	await authorizeIfIdChanged(list.username, listPassword);
 	setTimeout(async function cb() {
-		const record = await client.collection('lists').getOne(user.list, {
+		list = await client.collection('lists').getOne(list.id, {
 			expand: 'items'
 		});
 
@@ -37,46 +37,53 @@ async function getItems() {
 		for (const item of items) {
 			itemIds.push(item.id);
 		}
-		console.log(record);
-		console.log('items in record.expand exists:');
-		console.log('items' in record.expand);
-		if ('items' in record.expand) {
-			for (const item of record.expand.items) {
+		console.log('list:', list);
+		console.log('items in list.expand exists:', ('items' in list.expand));
+		if ('items' in list.expand) {
+			for (const item of list.expand.items) {
 				if (itemIds.includes(item.id) == false) {
 					client.collection('items').subscribe(item.id, async function (e) {
 						if (!(e.action == 'delete')) {
 							await getItems();
 						}
 					});
-					console.log(`Subscribed to item with id: ${item.id}`);
+					console.log('Subscribed to item with id:', item.id);
 				}
 			}
-			itemsStore.update((currentData) => record.expand.items);
+			itemsStore.update((currentData) => list.expand.items);
 		} else {
 			itemsStore.update((currentData) => []);
 		}
-		listRecord = record;
 	}, 0);
 }
 
-async function getUser(username, userPassword) {
-	const userApiResponse = await client.collection('users').authWithPassword(username, userPassword);
-	console.log('API response to user authentication:', userApiResponse);
-	user = userApiResponse.record;
+async function authorize(username, listPassword) {
+	const listApiResponse = await client.collection('lists').authWithPassword(username, listPassword);
+	await console.log('API response to authentication:', listApiResponse);
+	list = listApiResponse.record;
+}
+
+// This function is used for now to reauthorize if another browser tab (unfortunately sharing the same authorization store) has since authorized so that the wrong authorization token isn't used.
+async function authorizeIfIdChanged(username, listPassword) {
+	if (client.authStore.model.id != list.id) {
+		await authorize(username, listPassword);
+	}
 }
 
 async function updateItems() {
 	getItems();
 
+	await authorizeIfIdChanged(list.username, listPassword);
 	// Subscribe to list record in case new items are added.
-	client.collection('lists').subscribe(user.list, function (e) {
+	client.collection('lists').subscribe(list.id, function (e) {
 		getItems();
 	});
 }
 
 async function toggleItems(toBeToggledItems) {
+	await authorizeIfIdChanged(list.username, listPassword);
 	for (let item of toBeToggledItems) {
-		console.log(item.id);
+		console.log('Toggling item with id:', item.id);
 		if (item.done) {
 			item.done = false;
 			client.collection('items').update(item.id, { done: false });
@@ -88,11 +95,13 @@ async function toggleItems(toBeToggledItems) {
 }
 
 async function checkItem(item, check) {
+	await authorizeIfIdChanged(list.username, listPassword);
 	// Only the database needs to be updated because the item is already set done by `bind:checked={item.done}`.
 	client.collection('items').update(item.id, { done: item.done });
 }
 
 async function checkItems(toBeCheckedItems, check) {
+	await authorizeIfIdChanged(list.username, listPassword);
 	for (let item of toBeCheckedItems) {
 		if (check && item.done == false) {
 			item.done = true;
@@ -107,16 +116,18 @@ async function checkItems(toBeCheckedItems, check) {
 }
 
 async function deleteItem(id) {
+	await authorizeIfIdChanged(list.username, listPassword);
 	client.collection('items').delete(id);
 }
 
 async function deleteItems(toBeDeletedItems) {
+	await authorizeIfIdChanged(list.username, listPassword);
 	for (const item of toBeDeletedItems) {
 		client.collection('items').delete(item.id);
 	}
 }
 
-function anyCheckedItems(items) {
+async function anyCheckedItems(items) {
 	for (const item of items) {
 		if (item.done) {
 			return true;
@@ -128,6 +139,7 @@ function anyCheckedItems(items) {
 }
 
 async function deleteCheckedItems(items) {
+	await authorizeIfIdChanged(list.username, listPassword);
 	for (const item of items) {
 		if (item.done) {
 			client.collection('items').delete(item.id);
@@ -136,10 +148,9 @@ async function deleteCheckedItems(items) {
 }
 
 async function deleteList() {
+	await authorizeIfIdChanged(list.username, listPassword);
 	if (confirm('Do you really want to delete the list? There is no way of recovering the list.')) {
-		await deleteItems(items);
-		await client.collection('lists').delete(user.list);
-		await client.collection('users').delete(user.id);
+		await client.collection('lists').delete(list.id);
 
 		window.location.replace('/');
 	}
@@ -159,57 +170,41 @@ function generatePassword() {
 		.join('');
 }
 
-async function createUser() {
-	userPassword = generatePassword();
+async function createList() {
+	listPassword = generatePassword();
 	const data = {
 		username: generatePassword(),
-		password: userPassword,
-		passwordConfirm: userPassword,
-		key: generatePassword()
-	};
-	user = await client.collection('users').create(data);
-	console.log('Created user:', user);
-	console.log(`Password: ${userPassword}`);
-	await getUser(user.username, userPassword);
-}
-
-async function createList() {
-	await createUser();
-
-	const listData = {
+		password: listPassword,
+		passwordConfirm: listPassword,
 		items: items,
-		user: user.id,
-		key: user.key
 	};
-	console.log('Data of to be created list:', listData);
-	listRecord = await client.collection('lists').create(listData);
-	console.log('Current list:', listRecord);
+	list = await client.collection('lists').create(data);
+	console.log('Created list:', list);
+	console.log('Password:', listPassword);
+	await authorize(list.username, listPassword);
 
-	const userData = {
-		list: listRecord.id
-	};
-	user = await client.collection('users').update(user.id, userData);
-
-	let url = `/lists.html?user=${user.username}&password=${userPassword}`;
+	let url = `/lists.html?list=${list.username}&password=${listPassword}`;
 	console.log('Going just created list:', url);
 	window.location.replace(url);
 }
 
 async function createItem(item) {
+	await authorizeIfIdChanged(list.username, listPassword);
 	try {
 		const createdItemRecord = await client
 			.collection('items')
-			.create({ done: item.done, name: item.name, list: user.list });
+			.create({ done: item.done, name: item.name, list: list.id });
 
 		console.log('Created item:', createdItemRecord);
-		console.log('Current list', listRecord);
+		console.log('Current items:', items);
 
-		listRecord.items.push(createdItemRecord.id);
+		list.items.push(createdItemRecord.id);
 		const data = {
-			items: listRecord.items
+			items: list.items
 		};
+		console.log('list.items will be updated to', data);
 
-		client.collection('lists').update(user.list, data);
+		client.collection('lists').update(list.id, data);
 	} catch (error) {
 		console.error(error);
 		alert(
@@ -219,9 +214,9 @@ async function createItem(item) {
 }
 
 async function importItemsJson(jsonItems) {
-	console.log('jsonItems', jsonItems);
+	console.log('jsonItems:', jsonItems);
 	const parsedItems = JSON.parse(jsonItems);
-	console.log('parsedItems', parsedItems);
+	console.log('parsedItems:', parsedItems);
 
 	for (const item of parsedItems) {
 		await createItem({ name: item.name, done: item.done });
