@@ -19,6 +19,9 @@
 	],
 	"author": "Anna Aurora",
 	"license": "MIT",
+	"bin": {
+		"kaufdbclean": "./cleanup.js"
+	},
 	"scripts": {
 		"build": "vite build",
 		"db": "pocketbase serve",
