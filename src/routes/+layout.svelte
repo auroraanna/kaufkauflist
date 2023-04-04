@@ -1,3 +1,27 @@
+<script>
+	const iconSizes = 32;
+
+	function getIconSize(i) {
+		return ((i + 1) * 16);
+	}
+
+	let sizes;
+
+	for (let i = 0; i < iconSizes; i++) {
+		const iconSize = getIconSize(i);
+		sizes = `${sizes}${iconSize}x${iconSize}`;
+		if (i != (iconSizes - 1)) {
+			sizes = `${sizes} `;
+		}
+	}
+
+	import favicon from '$lib/assets/favicon.png';
+</script>
+
+<svelte:head>
+		<link rel="icon" type="image/png" sizes={sizes} href={favicon} />
+</svelte:head>
+
 <slot />
 
 <style>
