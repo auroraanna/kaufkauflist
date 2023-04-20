@@ -3,19 +3,28 @@
 }
 
 http://localhost:60000 {
-	encode zstd gzip
 	handle /api/* {
-		reverse_proxy localhost:8090
+		reverse_proxy localhost:8090 {
+			transport http {
+				compression off
+			}
+		}
 	}
 	handle {
 		root * build # If kaufkauflist is installed from nixpkgs you should replace `build` with `${pkgs.kaufkauflist}/share/kaufkauflist` in your Caddy config.
 		file_server
-		header /_app/immutable/* Cache-Control=31536000 # Files in this directory get a new hash suffix when they are updated, meaning they can be cached for a long time.
+		encode zstd gzip
+		header {
+			Referrer-Policy no-referrer
+			X-Content-Type-Options nosniff
+		}
+		header /_app/immutable/* {
+			Cache-Control=31536000 # Files in this directory get a new hash suffix when they are updated, meaning they can be cached for a long time.
+			-ETag # ETag header is probably not necessary for files cached that long
+		}
 	}
 	header {
 		Permissions-Policy "accelerometer=(), autoplay=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=()"
-		Content-Security-Policy "default-src 'none'; style-src 'self'; img-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self'; base-uri 'self'; frame-ancestors 'none'"
-		Referrer-Policy no-referrer
-		X-Content-Type-Options nosniff
+		Content-Security-Policy "default-src 'none'; style-src 'self'; img-src 'self'; script-src 'self' 'unsafe-inline'; script-src-attr 'none'; connect-src 'self'; form-action 'self'; base-uri 'self'; frame-ancestors 'none'"
 	}
 }
