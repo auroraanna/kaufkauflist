@@ -19,7 +19,7 @@ http://localhost:60000 {
 			X-Content-Type-Options nosniff
 		}
 		header /_app/immutable/* {
-			Cache-Control=31536000 # Files in this directory get a new hash suffix when they are updated, meaning they can be cached for a long time.
+			Cache-Control "max-age=31536000, immutable" # Files in this directory get a new hash suffix when they are updated, meaning they can be cached for a long time.
 			-ETag # ETag header is probably not necessary for files cached that long
 		}
 	}
