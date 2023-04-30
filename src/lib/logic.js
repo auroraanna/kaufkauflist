@@ -116,14 +116,18 @@ async function checkItems(toBeCheckedItems, check) {
 }
 
 async function deleteItem(id) {
-	await authorizeIfIdChanged(list.username, listPassword);
-	client.collection('items').delete(id);
+	if (confirm('Do you really want to delete that item? You have no way of recovering it.')) {
+		await authorizeIfIdChanged(list.username, listPassword);
+		client.collection('items').delete(id);
+	}
 }
 
 async function deleteItems(toBeDeletedItems) {
-	await authorizeIfIdChanged(list.username, listPassword);
-	for (const item of toBeDeletedItems) {
-		client.collection('items').delete(item.id);
+	if (confirm('Do you really want to delete those items? You have no way of recovering them.')) {
+		await authorizeIfIdChanged(list.username, listPassword);
+		for (const item of toBeDeletedItems) {
+			client.collection('items').delete(item.id);
+		}
 	}
 }
 
@@ -139,17 +143,19 @@ async function anyCheckedItems(items) {
 }
 
 async function deleteCheckedItems(items) {
-	await authorizeIfIdChanged(list.username, listPassword);
-	for (const item of items) {
-		if (item.done) {
-			client.collection('items').delete(item.id);
+	if (confirm('Do you really want to delete all the checked items? You have no way of recovering them.')) {
+		await authorizeIfIdChanged(list.username, listPassword);
+		for (const item of items) {
+			if (item.done) {
+				client.collection('items').delete(item.id);
+			}
 		}
 	}
 }
 
 async function deleteList() {
-	await authorizeIfIdChanged(list.username, listPassword);
-	if (confirm('Do you really want to delete the list? There is no way of recovering the list.')) {
+	if (confirm('Do you really want to delete the list? You have no way of recovering it.')) {
+		await authorizeIfIdChanged(list.username, listPassword);
 		await client.collection('lists').delete(list.id);
 
 		window.location.replace('/');
