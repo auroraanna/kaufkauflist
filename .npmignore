@@ -1,0 +1,8 @@
+shell.nix
+Caddyfile
+pb_schema.json
+.eslintrc.cjs
+.eslintignore
+.prettierrc
+.prettierignore
+build
