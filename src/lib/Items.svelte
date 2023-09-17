@@ -21,7 +21,12 @@
 					on:change={() => checkItem(item, item.done)}
 				/>
 				<label for={item.id}>{item.name}</label>
-				<button on:click={() => deleteItem(item.id)}>Delete item</button>
+				<button
+					on:click={() => deleteItem(item.id)}
+					aria-label="Delete item"
+					title="Delete item">
+					❌
+				</button>
 			</li>
 		{/each}
 	</ol>

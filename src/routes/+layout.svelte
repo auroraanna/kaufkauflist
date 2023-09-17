@@ -67,10 +67,12 @@
 		border-style: solid;
 		border-color: var(--button);
 		margin: 0.2rem;
-		padding: 0.2rem;
-		min-width: 5rem;
-		min-height: 2.74rem;
+		min-width: 48px;
+		min-height: 48px;
 		vertical-align: middle;
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	:global(button:active) {
