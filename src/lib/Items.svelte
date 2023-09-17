@@ -1,5 +1,5 @@
 <script>
-	import { checkItem, deleteItem, itemsStore } from '$lib/logic.js';
+	import { checkItem, editItemName, deleteItem, itemsStore } from '$lib/logic.js';
 
 	let items = [];
 	itemsStore.subscribe((data) => {
@@ -21,6 +21,12 @@
 					on:change={() => checkItem(item, item.done)}
 				/>
 				<label for={item.id}>{item.name}</label>
+				<button
+					on:click={() => editItemName(item.id)}
+					aria-label="Edit item's name"
+					title="Edit item's name">
+					✏️
+				</button>
 				<button
 					on:click={() => deleteItem(item.id)}
 					aria-label="Delete item"

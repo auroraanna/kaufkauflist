@@ -115,6 +115,22 @@ async function checkItems(toBeCheckedItems, check) {
 	items = items;
 }
 
+async function renameItem(id, name) {
+	await authorizeIfIdChanged(list.username, listPassword);
+	client.collection('items').update(id, { name: name })
+}
+
+function editItemName(id) {
+	let newName = prompt("New name of the item");
+	if (newName != null) {
+		if (newName.length >= 1 && newName.length <= 100) {
+			renameItem(id, newName);
+		} else {
+			alert('The new name must be must be a minimum of 1 character and a maximum of 100 characters. The name you entered does not fulfill those requirements.');
+		}
+	}
+}
+
 async function deleteItem(id) {
 	if (confirm('Do you really want to delete that item? You have no way of recovering it.')) {
 		await authorizeIfIdChanged(list.username, listPassword);
@@ -259,6 +275,7 @@ export {
 	toggleItems,
 	checkItem,
 	checkItems,
+	editItemName,
 	deleteItem,
 	deleteItems,
 	anyCheckedItems,
