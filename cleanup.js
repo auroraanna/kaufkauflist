@@ -4,20 +4,23 @@
 import PocketBase from 'pocketbase';
 
 const args = process.argv
+const env = process.env;
 
 // Prints help menu or does everything else.
 if (args.includes('-h') || args.includes('--help')) {
 	console.log(
 `USAGE:
-	${args[0]} ${args[1]} [OPTIONS] [HOST] [EMAIL] [PASSWORD]
+	KAUFDBCLEAN_HOST=[HOST] KAUFDBCLEAN_EMAIL=[EMAIL] KAUFDBCLEAN_PASSWORD=[PASSWORD] ${args[0]} ${args[1]} [OPTIONS]
 
 OPTIONS:
 	-h, --help`
 	);
+} else if (!env.KAUFDBCLEAN_HOST || !env.KAUFDBCLEAN_EMAIL || !env.KAUFDBCLEAN_PASSWORD) {
+	console.log("Not all required environment variables set.");
 } else {
-	const host = args[2];
-	const email = args[3];
-	const password = args[4];
+	const host = env.KAUFDBCLEAN_HOST;
+	const email = env.KAUFDBCLEAN_EMAIL;
+	const password = env.KAUFDBCLEAN_PASSWORD;
 
 	const pb = new PocketBase(host);
 
