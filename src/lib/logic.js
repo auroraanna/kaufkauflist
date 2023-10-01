@@ -38,19 +38,20 @@ async function getItems() {
 			itemIds.push(item.id);
 		}
 		console.log('list:', list);
-		console.log('items in list.expand exists:', ('items' in list.expand));
-		if ('items' in list.expand) {
-			for (const item of list.expand.items) {
-				if (itemIds.includes(item.id) == false) {
-					client.collection('items').subscribe(item.id, async function (e) {
-						if (!(e.action == 'delete')) {
-							await getItems();
-						}
-					});
-					console.log('Subscribed to item with id:', item.id);
+		if ('expand' in list) {
+			if ('items' in list.expand) {
+				for (const item of list.expand.items) {
+					if (itemIds.includes(item.id) == false) {
+						client.collection('items').subscribe(item.id, async function (e) {
+							if (!(e.action == 'delete')) {
+								await getItems();
+							}
+						});
+						console.log('Subscribed to item with id:', item.id);
+					}
 				}
+				itemsStore.update((currentData) => list.expand.items);
 			}
-			itemsStore.update((currentData) => list.expand.items);
 		} else {
 			itemsStore.update((currentData) => []);
 		}
