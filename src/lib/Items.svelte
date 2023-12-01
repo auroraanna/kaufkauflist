@@ -22,7 +22,7 @@
 				/>
 				<label for={item.id}>{item.name}</label>
 				<button
-					on:click={() => editItemName(item.id)}
+					on:click={() => editItemName(item)}
 					aria-label="Edit item's name"
 					title="Edit item's name">
 					✏️
