@@ -10,7 +10,6 @@ const config = {
 				'style-src': ['self'],
 				'img-src': ['self'],
 				'script-src': ['self'],
-				'script-src-attr': ['none'],
 				'connect-src': ['self'],
 				'form-action': ['self'],
 				'base-uri': ['self'],
