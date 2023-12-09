@@ -43,12 +43,6 @@
 		<button disabled={items.length == 0} on:click={() => checkItems(items, false)}
 			>Uncheck all items</button
 		>
-		<button disabled={items.length == 0} on:click={() => deleteItem(items[0].id)}
-			>Delete first item</button
-		>
-		<button disabled={items.length == 0} on:click={() => deleteItem(items[items.length - 1].id)}
-			>Delete last item</button
-		>
 		<button disabled={items.length == 0} on:click={() => deleteItems(items)}
 			>Delete all items</button
 		>
