@@ -11,7 +11,13 @@ let items = [];
 const itemsStore = writable(items);
 itemsStore.subscribe((data) => {
 	items = data;
+	console.log("Updated itemsStore!");
 });
+
+function itemIdToIndex(items, id) {
+	const hasIdX = (item) => item.id == id;
+	const index = items.findIndex(hasIdX);
+}
 
 async function initExisting() {
 	const params = new URLSearchParams(window.location.search);
@@ -22,40 +28,69 @@ async function initExisting() {
 
 	await authorize(username, listPassword);
 
-	updateItems();
-}
-
-async function getItems() {
-	await authorizeIfIdChanged(list.username, listPassword);
-	setTimeout(async function cb() {
 		list = await client.collection('lists').getOne(list.id, {
 			expand: 'items'
 		});
 
-		// Subscribe to not yet subscribed items in list and make record and items globally available.
-		let itemIds = [];
-		for (const item of items) {
-			itemIds.push(item.id);
-		}
-		console.log('list:', list);
 		if ('expand' in list) {
 			if ('items' in list.expand) {
-				for (const item of list.expand.items) {
-					if (itemIds.includes(item.id) == false) {
-						client.collection('items').subscribe(item.id, async function (e) {
-							if (!(e.action == 'delete')) {
-								await getItems();
-							}
-						});
-						console.log('Subscribed to item with id:', item.id);
-					}
-				}
-				itemsStore.update((currentData) => list.expand.items);
-			}
-		} else {
-			itemsStore.update((currentData) => []);
+			itemsStore.update(items => list.expand.items);
 		}
-	}, 0);
+	}
+
+	for (const item of items) {
+		subscribeToItem(item.id);
+	}
+
+	// Subscribe to list record in case new items are added or the list is deleted.
+	client.collection('lists').subscribe(list.id, async function (event) {
+		await authorizeIfIdChanged(list.username, listPassword);
+
+		if (event.action == 'update') {
+			console.log("List update!");
+
+			// If an item was deleted then these are not actually the old items since the subscription to the item already updated items. I don't know what else to name these though.
+			const oldItems = window.structuredClone(items);
+			let oldItemIds = [];
+			for (const item of oldItems) {
+				oldItemIds.push(item.id);
+			}
+			console.log("Old item ids:", oldItemIds);
+
+			list = event.record;
+			console.log("New item ids:", list.items);
+			for (const itemId of list.items) {
+				if (oldItemIds.includes(itemId) == false) {
+					console.log("New item found!")
+					const item = await client.collection('items').getOne(itemId);
+					items.push(item);
+					itemsStore.set(items);
+
+					subscribeToItem(item.id);
+				}
+			}
+			// Deleting local items is done here rather than in subscribeToItem() because although less efficient, this ensures it doesn't matter which subscription function is run first. If subscribeToItem() were to delete the local item upon an event.action of 'delete', then the lists subscription would think a new item was added.
+			for (const itemId of oldItemIds) {
+				if (list.items.includes(itemId) == false) {
+					const newItems = oldItems.toSpliced(itemIdToIndex(oldItems, itemId), 1);
+					itemsStore.set(newItems);
+					console.log("Deleted item with id:", itemId);
+				}
+			}
+		}
+		if (event.action == 'delete') {
+			window.location.replace('/');
+					}
+	});
+}
+
+async function subscribeToItem(id) {
+	client.collection('items').subscribe(id, async function (event) {
+		if (event.action == 'update') {
+			items[itemIdToIndex(items, id)] = event.record
+			itemsStore.set(items);
+			}
+	});
 }
 
 async function authorize(username, listPassword) {
@@ -71,23 +106,13 @@ async function authorizeIfIdChanged(username, listPassword) {
 	}
 }
 
-async function updateItems() {
-	getItems();
-
-	await authorizeIfIdChanged(list.username, listPassword);
-	// Subscribe to list record in case new items are added.
-	client.collection('lists').subscribe(list.id, function (e) {
-		getItems();
-	});
-}
-
 async function toggleItems(toBeToggledItems) {
 	await authorizeIfIdChanged(list.username, listPassword);
 	for (let item of toBeToggledItems) {
 		console.log('Toggling item with id:', item.id);
 		if (item.done) {
 			item.done = false;
-			client.collection('items').update(item.id, { done: false });
+			await client.collection('items').update(item.id, { done: false });
 		} else {
 			item.done = true;
 			client.collection('items').update(item.id, { done: true });
@@ -112,8 +137,6 @@ async function checkItems(toBeCheckedItems, check) {
 			client.collection('items').update(item.id, { done: false });
 		}
 	}
-	// `getItems()` is not needed here because the items were already checked locally.
-	items = items;
 }
 
 async function renameItem(id, name) {
@@ -122,7 +145,6 @@ async function renameItem(id, name) {
 }
 
 function editItemName(item) {
-	console.log(items);
 	let newName = prompt("New name of the item", item.name);
 	if (newName != null) {
 		if (newName.length >= 1 && newName.length <= 100) {
@@ -220,14 +242,12 @@ async function createItem(item) {
 			.create({ done: item.done, name: item.name, list: list.id });
 
 		console.log('Created item:', createdItemRecord);
-		console.log('Current items:', items);
 
-		list.items.push(createdItemRecord.id);
+		let updatedList = list;
+		updatedList.items.push(createdItemRecord.id);
 		const data = {
-			items: list.items
+			items: updatedList.items
 		};
-		console.log('list.items will be updated to', data);
-
 		client.collection('lists').update(list.id, data);
 	} catch (error) {
 		console.error(error);
@@ -272,8 +292,6 @@ function downloadItemsFile(items) {
 
 export {
 	initExisting,
-	getItems,
-	updateItems,
 	toggleItems,
 	checkItem,
 	checkItems,
