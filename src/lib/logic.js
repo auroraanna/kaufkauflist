@@ -7,6 +7,9 @@ const client = new PocketBase(import.meta.env.VITE_POCKETBASE_URL);
 let list;
 let listPassword;
 
+let isProcessingSubscriptionEvent = false;
+const subscriptionEventQueue = [];
+
 let items = [];
 const itemsStore = writable(items);
 itemsStore.subscribe((data) => {
@@ -16,7 +19,7 @@ itemsStore.subscribe((data) => {
 
 function itemIdToIndex(items, id) {
 	const hasIdX = (item) => item.id == id;
-	const index = items.findIndex(hasIdX);
+	return items.findIndex(hasIdX);
 }
 
 async function initExisting() {
@@ -44,10 +47,29 @@ async function initExisting() {
 
 	// Subscribe to list record in case new items are added or the list is deleted.
 	client.collection('lists').subscribe(list.id, async function (event) {
-		await authorizeIfIdChanged(list.username, listPassword);
-
 		if (event.action == 'update') {
-			console.log("List update!");
+			console.log("List update! Adding event to queue…");
+			subscriptionEventQueue.push(event);
+			processQueue();
+		}
+
+		if (event.action == 'delete') {
+			window.location.replace('/');
+		}
+	});
+}
+
+async function processQueue() {
+	if (isProcessingSubscriptionEvent) {
+		console.log("Queue is already being processed.");
+		return;
+	}
+	isProcessingSubscriptionEvent = true;
+
+	while (subscriptionEventQueue.length > 0) {
+		console.log("Processing queue…");
+
+		const event = subscriptionEventQueue.shift();
 
 			// If an item was deleted then these are not actually the old items since the subscription to the item already updated items. I don't know what else to name these though.
 			const oldItems = window.structuredClone(items);
@@ -62,6 +84,7 @@ async function initExisting() {
 			for (const itemId of list.items) {
 				if (oldItemIds.includes(itemId) == false) {
 					console.log("New item found!")
+				await authorizeIfIdChanged(list.username, listPassword);
 					const item = await client.collection('items').getOne(itemId);
 					items.push(item);
 					itemsStore.set(items);
@@ -72,22 +95,20 @@ async function initExisting() {
 			// Deleting local items is done here rather than in subscribeToItem() because although less efficient, this ensures it doesn't matter which subscription function is run first. If subscribeToItem() were to delete the local item upon an event.action of 'delete', then the lists subscription would think a new item was added.
 			for (const itemId of oldItemIds) {
 				if (list.items.includes(itemId) == false) {
-					const newItems = oldItems.toSpliced(itemIdToIndex(oldItems, itemId), 1);
-					itemsStore.set(newItems);
+				itemsStore.set(items.toSpliced(itemIdToIndex(items, itemId), 1));
 					console.log("Deleted item with id:", itemId);
 				}
 			}
 		}
-		if (event.action == 'delete') {
-			window.location.replace('/');
-					}
-	});
+
+	isProcessingSubscriptionEvent = false;
+	console.log("Done processing queue.");
 }
 
 async function subscribeToItem(id) {
 	client.collection('items').subscribe(id, async function (event) {
 		if (event.action == 'update') {
-			items[itemIdToIndex(items, id)] = event.record
+			items[itemIdToIndex(items, id)] = event.record;
 			itemsStore.set(items);
 			}
 	});
