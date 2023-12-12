@@ -57,6 +57,8 @@ async function initExisting() {
 			window.location.replace('/');
 		}
 	});
+
+	sortItems();
 }
 
 async function processQueue() {
@@ -90,6 +92,8 @@ async function processQueue() {
 					itemsStore.set(items);
 
 					subscribeToItem(item.id);
+
+				sortItems();
 				}
 			}
 			// Deleting local items is done here rather than in subscribeToItem() because although less efficient, this ensures it doesn't matter which subscription function is run first. If subscribeToItem() were to delete the local item upon an event.action of 'delete', then the lists subscription would think a new item was added.
@@ -111,6 +115,8 @@ async function subscribeToItem(id) {
 			items[itemIdToIndex(items, id)] = event.record;
 			itemsStore.set(items);
 			}
+
+		sortItems();
 	});
 }
 
@@ -276,6 +282,23 @@ async function createItem(item) {
 			'The item was not created. You might not be able to create items this fast or the item name might be too long.'
 		);
 	}
+}
+
+function sortItems() {
+	const newItems = [];
+	const done = [];
+
+	for (const item of items) {
+		if (item.done) {
+			done.push(item);
+		} else {
+			newItems.push(item);
+		}
+	}
+
+	done.forEach((item) => newItems.push(item));
+
+	itemsStore.set(newItems);
 }
 
 async function importItemsJson(jsonItems) {
