@@ -12,6 +12,7 @@
 		downloadItemsFile,
 		itemsStore
 	} from '$lib/logic.js';
+	import PredefinedListChooser from './PredefinedListChooser.svelte';
 
 	let items = [];
 	itemsStore.subscribe((data) => {
@@ -37,6 +38,7 @@
 	</form>
 	<details>
 		<summary>More controls</summary>
+
 		<button disabled={items.length == 0} on:click={() => checkItems(items, true)}
 			>Check all items</button
 		>
@@ -52,5 +54,7 @@
 			<button disabled={!files} type="submit">Import items</button>
 		</form>
 		<button on:click={() => downloadItemsFile(items)}>Download items as JSON</button>
+
+		<PredefinedListChooser/>
 	</details>
 </fieldset>

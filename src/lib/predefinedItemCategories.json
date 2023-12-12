@@ -1,0 +1,83 @@
+[
+	{
+			"name": "plants",
+			"items": [
+			"apples",
+			"avocados",
+			"bananas",
+			"bell pepper",
+			"blueberries",
+			"broccoli",
+			"carrots",
+			"cherries",
+			"coconuts",
+			"corn",
+			"cucumbers",
+			"eggplant",
+			"garlic",
+			"ginger",
+			"grapes",
+			"kiwis",
+			"kohlrabi",
+			"lemons",
+			"lettuce",
+			"mangos",
+			"olives",
+			"onion",
+			"oranges",
+			"peaches",
+			"peanuts",
+			"pears",
+			"peas",
+			"pineapples",
+			"plums",
+			"potatoes",
+			"raspberries",
+			"strawberries",
+			"tomatoes",
+			"watermelons"
+		]
+	},
+	{
+			"name": "other food",
+			"items": [
+			"pasta",
+			"rice",
+			"bread",
+			"toast",
+			"frying oil"
+		]
+	},
+	{
+			"name": "sauces",
+			"items": [
+			"tomato sauce",
+			"pesto",
+			"ketchup",
+			"mayonaise",
+			"mustard",
+			"hot sauce",
+			"sweet chili sauce",
+			"soy sauce"
+		]
+	},
+	{
+			"name": "spices",
+			"items": [
+			"salt",
+			"pepper",
+			"bell pepper",
+			"chili",
+			"curry"
+		]
+	},
+	{
+			"name": "cleaning",
+			"items": [
+			"kitchen paper rolls",
+			"toilet paper",
+			"soap",
+			"detergent"
+		]
+	}
+]
