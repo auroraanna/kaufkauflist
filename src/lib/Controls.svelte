@@ -10,7 +10,9 @@
 		createItem,
 		importItemsFiles,
 		downloadItemsFile,
-		itemsStore
+		itemsStore,
+		sortOrders,
+		secondSortOrderStore
 	} from '$lib/logic.js';
 	import PredefinedListChooser from './PredefinedListChooser.svelte';
 
@@ -21,6 +23,12 @@
 
 	let nameInput = '';
 	let files;
+
+	let secondSortOrder = 0;
+	secondSortOrderStore.subscribe((value) => {
+		secondSortOrder = value;
+	});
+	$: secondSortOrderStore.set(secondSortOrder);
 </script>
 
 <fieldset>
@@ -36,6 +44,13 @@
 		<input type="text" id="createItem" bind:value={nameInput} />
 		<button disabled={!nameInput} type="submit">Create item</button>
 	</form>
+	<label for="sortOrderSelect">Second sort order</label>
+	<select name="sortOrder" id="sortOrderSelect" bind:value={secondSortOrder}>
+		{#each sortOrders as sortOrder, index}
+			<option value={index}>{sortOrder}</option>
+		{/each}
+	</select>
+
 	<details>
 		<summary>More controls</summary>
 

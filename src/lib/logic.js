@@ -17,12 +17,32 @@ itemsStore.subscribe((data) => {
 	console.log("Updated itemsStore!");
 });
 
+const sortOrders = [
+	"recently updated",
+	"alphabetical"
+];
+let secondSortOrder = 0;
+let secondSortOrderStore = writable(secondSortOrder);
+
 function itemIdToIndex(items, id) {
 	const hasIdX = (item) => item.id == id;
 	return items.findIndex(hasIdX);
 }
 
 async function initExisting() {
+	secondSortOrderStore.set(
+		window.localStorage.getItem("secondSortOrder") == sortOrders[1] ? 1 : 0
+	);
+	secondSortOrderStore.subscribe((value) => {
+		secondSortOrder = value;
+		window.localStorage.setItem(
+			"secondSortOrder",
+			(value == 0 ? sortOrders[0] : sortOrders[1])
+		);
+
+		sortItems();
+	});
+
 	const params = new URLSearchParams(window.location.search);
 	const username = params.get('list');
 	console.log('Got list username from URL query parameters:', username);
@@ -284,6 +304,23 @@ async function createItem(item) {
 	}
 }
 
+function itemNameCompare(a, b) {
+	return a.name.localeCompare(b.name);
+}
+
+function itemUpdatedCompare(a, b) {
+	const aUpdatedMs = new Date(a.updated).valueOf();
+	const bUpdatedMs = new Date(b.updated).valueOf();
+
+	if (aUpdatedMs > bUpdatedMs) {
+		return -1;
+	} else if (aUpdatedMs == bUpdatedMs) {
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
 function sortItems() {
 	const undone = [];
 	const done = [];
@@ -295,6 +332,10 @@ function sortItems() {
 			undone.push(item);
 		}
 	}
+
+	const compareFn = secondSortOrder == 0 ? itemUpdatedCompare : itemNameCompare;
+	undone.sort(compareFn);
+	done.sort(compareFn);
 
 	itemsStore.set(undone.concat(done));
 }
@@ -360,5 +401,7 @@ export {
 	importItemsFiles,
 	downloadItemsFile,
 	itemsContainingXString,
-	itemsStore
+	itemsStore,
+	sortOrders,
+	secondSortOrderStore
 };
