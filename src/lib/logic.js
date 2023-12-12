@@ -334,6 +334,18 @@ function downloadItemsFile(items) {
 	document.body.removeChild(downloadElement);
 }
 
+function itemsContainingXString(items, x) {
+	const itemsContainingX = [];
+
+	for (const item of items) {
+		if (item.name.toLowerCase().includes(x.toLowerCase())) {
+			itemsContainingX.push(item.id);
+		}
+	}
+
+	return itemsContainingX;
+}
+
 export {
 	initExisting,
 	toggleItems,
@@ -349,5 +361,6 @@ export {
 	createItem,
 	importItemsFiles,
 	downloadItemsFile,
+	itemsContainingXString,
 	itemsStore
 };
