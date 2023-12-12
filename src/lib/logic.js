@@ -285,20 +285,18 @@ async function createItem(item) {
 }
 
 function sortItems() {
-	const newItems = [];
+	const undone = [];
 	const done = [];
 
 	for (const item of items) {
 		if (item.done) {
 			done.push(item);
 		} else {
-			newItems.push(item);
+			undone.push(item);
 		}
 	}
 
-	done.forEach((item) => newItems.push(item));
-
-	itemsStore.set(newItems);
+	itemsStore.set(undone.concat(done));
 }
 
 async function importItemsJson(jsonItems) {
