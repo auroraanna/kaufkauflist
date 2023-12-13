@@ -322,6 +322,8 @@ function itemUpdatedCompare(a, b) {
 }
 
 function sortItems() {
+	const start = Date.now();
+
 	const undone = [];
 	const done = [];
 
@@ -338,6 +340,9 @@ function sortItems() {
 	done.sort(compareFn);
 
 	itemsStore.set(undone.concat(done));
+
+	const end = Date.now();
+	console.log("Sorting took " + (end - start) + "ms.");
 }
 
 async function importItemsJson(jsonItems) {
