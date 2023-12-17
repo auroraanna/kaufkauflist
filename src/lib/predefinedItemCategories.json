@@ -1,7 +1,7 @@
 [
 	{
-			"name": "plants",
-			"items": [
+		"name": "plants",
+		"items": [
 			"apples",
 			"avocados",
 			"bananas",
@@ -39,8 +39,8 @@
 		]
 	},
 	{
-			"name": "other food",
-			"items": [
+		"name": "other food",
+		"items": [
 			"pasta",
 			"rice",
 			"bread",
@@ -49,12 +49,12 @@
 		]
 	},
 	{
-			"name": "sauces",
-			"items": [
+		"name": "sauces",
+		"items": [
 			"tomato sauce",
 			"pesto",
 			"ketchup",
-			"mayonaise",
+			"mayonnaise",
 			"mustard",
 			"hot sauce",
 			"sweet chili sauce",
@@ -62,22 +62,26 @@
 		]
 	},
 	{
-			"name": "spices",
-			"items": [
+		"name": "spices",
+		"items": [
 			"salt",
 			"pepper",
-			"bell pepper",
+			"paprika",
 			"chili",
 			"curry"
 		]
 	},
 	{
-			"name": "cleaning",
-			"items": [
+		"name": "cleaning and hygiene",
+		"items": [
 			"kitchen paper rolls",
 			"toilet paper",
 			"soap",
-			"detergent"
+			"detergent",
+			"pantyliners",
+			"tampons",
+			"tooth paste",
+			"tooth brush"
 		]
 	}
 ]
