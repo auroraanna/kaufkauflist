@@ -38,7 +38,7 @@
 	</button>
 	</form>
 
-	<ol>
+	<ol id="userItemList">
 		{#each items as item}
 			{#if (showingSearch && notHiddenItemIds.includes(item.id)) || !showingSearch}
 				<li>
@@ -67,3 +67,10 @@
 		{/each}
 	</ol>
 </fieldset>
+
+<style>
+	#userItemList {
+		list-style-type: none;
+		padding-inline-start: 0rem;
+	}
+</style>
