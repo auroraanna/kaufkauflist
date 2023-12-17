@@ -39,12 +39,14 @@
 		>Delete checked items</button
 	>
 	<button on:click={() => deleteList()}>Delete list</button>
-	<label for="sortOrderSelect">Second sort order</label>
-	<select name="sortOrder" id="sortOrderSelect" bind:value={secondSortOrder}>
-		{#each sortOrders as sortOrder, index}
-			<option value={index}>{sortOrder}</option>
-		{/each}
-	</select>
+	<div>
+		<label for="sortOrderSelect">Second sort order</label>
+		<select name="sortOrder" id="sortOrderSelect" bind:value={secondSortOrder}>
+			{#each sortOrders as sortOrder, index}
+				<option value={index}>{sortOrder}</option>
+			{/each}
+		</select>
+	</div>
 
 	<details>
 		<summary>More controls</summary>

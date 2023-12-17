@@ -58,17 +58,26 @@
 		vertical-align: middle;
 	}
 
-	:global(button) {
+	:global(select) {
+		background-color: var(--on_select);
+		color: var(--select);
+		border-color: var(--select);
+	}
+
+	:global(button), :global(select) {
+		min-width: 48px;
+		min-height: 48px;
 		font-size: 1.1rem;
-		background-color: var(--on_button);
-		color: var(--button);
 		border-radius: 0.2rem;
 		border-width: 0.1rem;
 		border-style: solid;
-		border-color: var(--button);
 		margin: 0.2rem;
-		min-width: 48px;
-		min-height: 48px;
+	}
+
+	:global(button) {
+		background-color: var(--on_button);
+		color: var(--button);
+		border-color: var(--button);
 		vertical-align: middle;
 		display: inline-flex;
 		justify-content: center;
@@ -134,6 +143,8 @@
 		--on_disabled_button: #dee3de;
 		--input: #600094;
 		--on_input: #eac2ff;
+		--select: #006128;
+		--on_select: #D6FFE7;
 		--error: #8c1c18;
 		--on_error: #f9dedc;
 	}
@@ -151,6 +162,8 @@
 			--on_disabled_button: #211c21;
 			--input: #98ff61;
 			--on_input: #1d5200;
+			--select: #efadff;
+			--on_select: #3f004e;
 			--error: #f9dedc;
 			--on_error: #8c1c18;
 		}
