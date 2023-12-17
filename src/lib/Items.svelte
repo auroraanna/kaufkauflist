@@ -1,5 +1,5 @@
 <script>
-	import { checkItem, editItemName, deleteItem, itemsContainingXString, itemsStore } from '$lib/logic.js';
+	import { createItem, checkItem, editItemName, deleteItem, itemsContainingXString, itemsStore } from '$lib/logic.js';
 
 	let searchInput = '';
 	$: showingSearch = searchInput.length != 0;
