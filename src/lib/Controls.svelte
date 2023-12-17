@@ -39,11 +39,6 @@
 		>Delete checked items</button
 	>
 	<button on:click={() => deleteList()}>Delete list</button>
-	<form on:submit|preventDefault={createItem({ name: nameInput, done: false })}>
-		<label for="createItem">Item name</label>
-		<input type="text" id="createItem" bind:value={nameInput} />
-		<button disabled={!nameInput} type="submit">Create item</button>
-	</form>
 	<label for="sortOrderSelect">Second sort order</label>
 	<select name="sortOrder" id="sortOrderSelect" bind:value={secondSortOrder}>
 		{#each sortOrders as sortOrder, index}

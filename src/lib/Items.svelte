@@ -18,15 +18,25 @@
 <fieldset>
 	<legend>Items</legend>
 
+	<form on:submit|preventDefault={() => createItem({ name: searchInput, done: false })}>
 	<label for="search">Search box</label>
-	<input type="text" id="search" bind:value={searchInput} />
+		<input
+			type="search"
+			id="search"
+			bind:value={searchInput}
+			minlength="1"
+			maxlength="100"
+			placeholder="potatoes"
+		/>
 	<button
+			disabled={!showingSearch}
 		on:click={() => clearSearch()}
-		disabled={!showingSearch}
-		aria-label="Clear the search"
-		title="Clear the search">
-		❌
+			type="submit"
+			aria-label="Create item from search box input"
+			title="Create item from search box input">
+			Add
 	</button>
+	</form>
 
 	<ol>
 		{#each items as item}

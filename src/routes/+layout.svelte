@@ -86,7 +86,7 @@
 		border-color: var(--disabled_button);
 	}
 
-	:global(input[type='text'], input[type='file']) {
+	:global(input[type='text'], input[type='file'], input[type='search']) {
 		font-size: 1.1rem;
 		background-color: var(--on_input);
 		color: var(--input);
