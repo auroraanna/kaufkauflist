@@ -13,12 +13,17 @@
 	itemsStore.subscribe((data) => {
 		items = data;
 	});
+
+	function handleSubmit() {
+		createItem({ name: searchInput, done: false });
+		clearSearch();
+	}
 </script>
 
 <fieldset>
 	<legend>Items</legend>
 
-	<form on:submit|preventDefault={() => createItem({ name: searchInput, done: false })}>
+	<form on:submit|preventDefault={() => handleSubmit()}>
 	<label for="search">Search box</label>
 		<input
 			type="search"
@@ -30,7 +35,6 @@
 		/>
 	<button
 			disabled={!showingSearch}
-		on:click={() => clearSearch()}
 			type="submit"
 			aria-label="Create item from search box input"
 			title="Create item from search box input">
