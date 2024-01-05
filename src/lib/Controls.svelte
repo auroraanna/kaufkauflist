@@ -67,6 +67,6 @@
 		</form>
 		<button on:click={() => downloadItemsFile(items)}>Download items as JSON</button>
 
-		<PredefinedListChooser/>
+		<PredefinedListChooser />
 	</details>
 </fieldset>

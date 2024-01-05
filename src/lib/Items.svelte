@@ -1,5 +1,12 @@
 <script>
-	import { createItem, checkItem, editItemName, deleteItem, itemsContainingXString, itemsStore } from '$lib/logic.js';
+	import {
+		createItem,
+		checkItem,
+		editItemName,
+		deleteItem,
+		itemsContainingXString,
+		itemsStore
+	} from '$lib/logic.js';
 
 	let searchInput = '';
 	$: showingSearch = searchInput.length != 0;
@@ -24,7 +31,7 @@
 	<legend>Items</legend>
 
 	<form on:submit|preventDefault={() => handleSubmit()}>
-	<label for="search">Search box</label>
+		<label for="search">Search box</label>
 		<input
 			type="search"
 			id="search"
@@ -33,13 +40,14 @@
 			maxlength="100"
 			placeholder="potatoes"
 		/>
-	<button
+		<button
 			disabled={!showingSearch}
 			type="submit"
 			aria-label="Create item from search box input"
-			title="Create item from search box input">
+			title="Create item from search box input"
+		>
 			Add
-	</button>
+		</button>
 	</form>
 
 	<ol id="userItemList">
@@ -57,13 +65,15 @@
 					<button
 						on:click={() => editItemName(item)}
 						aria-label="Edit item's name"
-						title="Edit item's name">
+						title="Edit item's name"
+					>
 						✏️
 					</button>
 					<button
 						on:click={() => deleteItem(item.id)}
 						aria-label="Delete item"
-						title="Delete item">
+						title="Delete item"
+					>
 						❌
 					</button>
 				</li>

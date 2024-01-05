@@ -3,7 +3,7 @@
 
 import PocketBase from 'pocketbase';
 
-const args = process.argv
+const args = process.argv;
 const env = process.env;
 
 // Prints help menu or does everything else.
@@ -16,7 +16,7 @@ OPTIONS:
 	-h, --help`
 	);
 } else if (!env.KAUFDBCLEAN_HOST || !env.KAUFDBCLEAN_EMAIL || !env.KAUFDBCLEAN_PASSWORD) {
-	console.log("Not all required environment variables set.");
+	console.log('Not all required environment variables set.');
 } else {
 	const host = env.KAUFDBCLEAN_HOST;
 	const email = env.KAUFDBCLEAN_EMAIL;
@@ -28,7 +28,7 @@ OPTIONS:
 	await pb.admins.authWithPassword(email, password);
 
 	const lists = await pb.collection('lists').getFullList(500, {
-		expand: 'items',
+		expand: 'items'
 	});
 
 	const now = Date.now();

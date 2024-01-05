@@ -2,7 +2,7 @@
 	const iconSizes = 32;
 
 	function getIconSize(i) {
-		return ((i + 1) * 16);
+		return (i + 1) * 16;
 	}
 
 	let sizes;
@@ -10,7 +10,7 @@
 	for (let i = 0; i < iconSizes; i++) {
 		const iconSize = getIconSize(i);
 		sizes = `${sizes}${iconSize}x${iconSize}`;
-		if (i != (iconSizes - 1)) {
+		if (i != iconSizes - 1) {
 			sizes = `${sizes} `;
 		}
 	}
@@ -19,7 +19,7 @@
 </script>
 
 <svelte:head>
-		<link rel="icon" type="image/png" sizes={sizes} href={favicon} />
+	<link rel="icon" type="image/png" {sizes} href={favicon} />
 </svelte:head>
 
 <slot />
@@ -64,7 +64,8 @@
 		border-color: var(--select);
 	}
 
-	:global(button), :global(select) {
+	:global(button),
+	:global(select) {
 		min-width: 48px;
 		min-height: 48px;
 		font-size: 1.1rem;
@@ -144,7 +145,7 @@
 		--input: #600094;
 		--on_input: #eac2ff;
 		--select: #006128;
-		--on_select: #D6FFE7;
+		--on_select: #d6ffe7;
 		--error: #8c1c18;
 		--on_error: #f9dedc;
 	}

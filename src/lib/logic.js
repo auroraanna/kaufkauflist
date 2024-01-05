@@ -14,13 +14,10 @@ let items = [];
 const itemsStore = writable(items);
 itemsStore.subscribe((data) => {
 	items = data;
-	console.log("Updated itemsStore!");
+	console.log('Updated itemsStore!');
 });
 
-const sortOrders = [
-	"recently updated",
-	"alphabetical"
-];
+const sortOrders = ['recently updated', 'alphabetical'];
 let secondSortOrder = 0;
 let secondSortOrderStore = writable(secondSortOrder);
 
@@ -31,12 +28,12 @@ function itemIdToIndex(items, id) {
 
 async function initExisting() {
 	secondSortOrderStore.set(
-		window.localStorage.getItem("secondSortOrder") == sortOrders[1] ? 1 : 0
+		window.localStorage.getItem('secondSortOrder') == sortOrders[1] ? 1 : 0
 	);
 	secondSortOrderStore.subscribe((value) => {
 		secondSortOrder = value;
 		window.localStorage.setItem(
-			"secondSortOrder",
+			'secondSortOrder',
 			(value == 0 ? sortOrders[0] : sortOrders[1])
 		);
 
@@ -57,7 +54,7 @@ async function initExisting() {
 
 		if ('expand' in list) {
 			if ('items' in list.expand) {
-			itemsStore.update(items => list.expand.items);
+			itemsStore.update((items) => list.expand.items);
 		}
 	}
 
@@ -68,7 +65,7 @@ async function initExisting() {
 	// Subscribe to list record in case new items are added or the list is deleted.
 	client.collection('lists').subscribe(list.id, async function (event) {
 		if (event.action == 'update') {
-			console.log("List update! Adding event to queue…");
+			console.log('List update! Adding event to queue…');
 			subscriptionEventQueue.push(event);
 			processQueue();
 		}
@@ -83,50 +80,50 @@ async function initExisting() {
 
 async function processQueue() {
 	if (isProcessingSubscriptionEvent) {
-		console.log("Queue is already being processed.");
+		console.log('Queue is already being processed.');
 		return;
 	}
 	isProcessingSubscriptionEvent = true;
 
 	while (subscriptionEventQueue.length > 0) {
-		console.log("Processing queue…");
+		console.log('Processing queue…');
 
 		const event = subscriptionEventQueue.shift();
 
-			// If an item was deleted then these are not actually the old items since the subscription to the item already updated items. I don't know what else to name these though.
-			const oldItems = window.structuredClone(items);
-			let oldItemIds = [];
-			for (const item of oldItems) {
-				oldItemIds.push(item.id);
-			}
-			console.log("Old item ids:", oldItemIds);
+		// If an item was deleted then these are not actually the old items since the subscription to the item already updated items. I don't know what else to name these though.
+		const oldItems = window.structuredClone(items);
+		let oldItemIds = [];
+		for (const item of oldItems) {
+			oldItemIds.push(item.id);
+		}
+		console.log('Old item ids:', oldItemIds);
 
-			list = event.record;
-			console.log("New item ids:", list.items);
-			for (const itemId of list.items) {
-				if (oldItemIds.includes(itemId) == false) {
-					console.log("New item found!")
+		list = event.record;
+		console.log('New item ids:', list.items);
+		for (const itemId of list.items) {
+			if (oldItemIds.includes(itemId) == false) {
+				console.log('New item found!');
 				await authorizeIfIdChanged(list.username, listPassword);
-					const item = await client.collection('items').getOne(itemId);
-					items.push(item);
-					itemsStore.set(items);
+				const item = await client.collection('items').getOne(itemId);
+				items.push(item);
+				itemsStore.set(items);
 
-					subscribeToItem(item.id);
+				subscribeToItem(item.id);
 
 				sortItems();
-				}
-			}
-			// Deleting local items is done here rather than in subscribeToItem() because although less efficient, this ensures it doesn't matter which subscription function is run first. If subscribeToItem() were to delete the local item upon an event.action of 'delete', then the lists subscription would think a new item was added.
-			for (const itemId of oldItemIds) {
-				if (list.items.includes(itemId) == false) {
-				itemsStore.set(items.toSpliced(itemIdToIndex(items, itemId), 1));
-					console.log("Deleted item with id:", itemId);
-				}
 			}
 		}
+		// Deleting local items is done here rather than in subscribeToItem() because although less efficient, this ensures it doesn't matter which subscription function is run first. If subscribeToItem() were to delete the local item upon an event.action of 'delete', then the lists subscription would think a new item was added.
+		for (const itemId of oldItemIds) {
+			if (list.items.includes(itemId) == false) {
+				itemsStore.set(items.toSpliced(itemIdToIndex(items, itemId), 1));
+				console.log('Deleted item with id:', itemId);
+			}
+		}
+	}
 
 	isProcessingSubscriptionEvent = false;
-	console.log("Done processing queue.");
+	console.log('Done processing queue.');
 }
 
 async function subscribeToItem(id) {
@@ -134,7 +131,7 @@ async function subscribeToItem(id) {
 		if (event.action == 'update') {
 			items[itemIdToIndex(items, id)] = event.record;
 			itemsStore.set(items);
-			}
+		}
 
 		sortItems();
 	});
@@ -188,16 +185,18 @@ async function checkItems(toBeCheckedItems, check) {
 
 async function renameItem(id, name) {
 	await authorizeIfIdChanged(list.username, listPassword);
-	client.collection('items').update(id, { name: name })
+	client.collection('items').update(id, { name: name });
 }
 
 function editItemName(item) {
-	let newName = prompt("New name of the item", item.name);
+	let newName = prompt('New name of the item', item.name);
 	if (newName != null) {
 		if (newName.length >= 1 && newName.length <= 100) {
 			renameItem(item.id, newName);
 		} else {
-			alert('The new name must be must be a minimum of 1 character and a maximum of 100 characters. The name you entered does not fulfill those requirements.');
+			alert(
+				'The new name must be must be a minimum of 1 character and a maximum of 100 characters. The name you entered does not fulfill those requirements.'
+			);
 		}
 	}
 }
@@ -230,7 +229,11 @@ async function anyCheckedItems(items) {
 }
 
 async function deleteCheckedItems(items) {
-	if (confirm('Do you really want to delete all the checked items? You have no way of recovering them.')) {
+	if (
+		confirm(
+			'Do you really want to delete all the checked items? You have no way of recovering them.'
+		)
+	) {
 		await authorizeIfIdChanged(list.username, listPassword);
 		for (const item of items) {
 			if (item.done) {
@@ -269,7 +272,7 @@ async function createList() {
 		username: generatePassword(),
 		password: listPassword,
 		passwordConfirm: listPassword,
-		items: items,
+		items: items
 	};
 	list = await client.collection('lists').create(data);
 	console.log('Created list:', list);
@@ -342,7 +345,7 @@ function sortItems() {
 	itemsStore.set(undone.concat(done));
 
 	const end = Date.now();
-	console.log("Sorting took " + (end - start) + "ms.");
+	console.log('Sorting took ' + (end - start) + 'ms.');
 }
 
 async function importItemsJson(jsonItems) {

@@ -18,12 +18,14 @@
 							<li>
 								<label>{item}</label>
 								<button
-									on:click={() => createItem({
+									on:click={() =>
+										createItem({
 										done: false,
 										name: item
 									})}
 									aria-label="Add item to your own list"
-									title="Add item to your own list">
+									title="Add item to your own list"
+								>
 									Add
 								</button>
 							</li>
