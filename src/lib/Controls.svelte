@@ -40,7 +40,7 @@
 	>
 	<button on:click={() => deleteList()}>Delete list</button>
 	<div>
-		<label for="sortOrderSelect">Second sort order</label>
+		<label for="sortOrderSelect">Secondary sort order</label>
 		<select name="sortOrder" id="sortOrderSelect" bind:value={secondSortOrder}>
 			{#each sortOrders as sortOrder, index}
 				<option value={index}>{sortOrder}</option>
