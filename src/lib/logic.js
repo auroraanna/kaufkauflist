@@ -7,6 +7,8 @@ const client = new PocketBase(import.meta.env.VITE_POCKETBASE_URL);
 let list;
 let listPassword;
 
+const listNameStore = writable("");
+
 let isProcessingSubscriptionEvent = false;
 const subscriptionEventQueue = [];
 
@@ -51,6 +53,8 @@ async function initExisting() {
 		list = await client.collection('lists').getOne(list.id, {
 			expand: 'items'
 		});
+
+		listNameStore.set(list.name);
 
 		if ('expand' in list) {
 			if ('items' in list.expand) {
@@ -99,6 +103,7 @@ async function processQueue() {
 		console.log('Old item ids:', oldItemIds);
 
 		list = event.record;
+		listNameStore.set(list.name);
 		console.log('New item ids:', list.items);
 		for (const itemId of list.items) {
 			if (oldItemIds.includes(itemId) == false) {
@@ -147,6 +152,24 @@ async function authorize(username, listPassword) {
 async function authorizeIfIdChanged(username, listPassword) {
 	if (client.authStore.model.id != list.id) {
 		await authorize(username, listPassword);
+	}
+}
+
+async function renameList(name) {
+	await authorizeIfIdChanged(list.username, listPassword);
+	client.collection('lists').update(list.id, { name: name });
+}
+
+function editListName() {
+	let newName = prompt('New name of the list, e.g.: groceries', list.name);
+	if (newName != null) {
+		if (newName.length >= 1 && newName.length <= 100) {
+			renameList(newName);
+		} else {
+			alert(
+				'The new name must be must be a minimum of 1 character and a maximum of 100 characters. The name you entered does not fulfill those requirements.'
+			);
+		}
 	}
 }
 
@@ -395,6 +418,8 @@ function itemsContainingXString(items, x) {
 
 export {
 	initExisting,
+	listNameStore,
+	editListName,
 	toggleItems,
 	checkItem,
 	checkItems,

@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { initExisting } from '$lib/logic.js';
+	import ListName from '$lib/ListName.svelte';
 	import Controls from '$lib/Controls.svelte';
 	import Items from '$lib/Items.svelte';
 
@@ -10,5 +11,6 @@
 	});
 </script>
 
+<ListName />
 <Controls />
 <Items />
