@@ -37,6 +37,13 @@
 		width: fit-content;
 	}
 
+	:global(footer) {
+		margin-top: 1rem;
+		border-top-width: 1pt;
+		border-top-style: solid;
+		border-top-color: var(--on_background);
+	}
+
 	:global(a) {
 		color: var(--anchor);
 	}

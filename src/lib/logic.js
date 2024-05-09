@@ -23,6 +23,33 @@ const sortOrders = ['recently updated', 'alphabetical'];
 let secondSortOrder = 0;
 let secondSortOrderStore = writable(secondSortOrder);
 
+function addUsedList(id, name, username, password) {
+	let usedLists = JSON.parse(
+		window.localStorage.getItem('usedLists')
+	);
+	let newUsedList = {
+		id,
+		name,
+		username,
+		password
+	};
+	if (usedLists == null) {
+		usedLists = [newUsedList];
+	} else {
+		// Make sure lists aren't duplicated
+		let firstView = true;
+		usedLists.forEach((usedList) => {
+			if (usedList.id == id) {
+				firstView = false;
+			}
+		});
+		if (firstView) {
+			usedLists.push(newUsedList);
+		}
+	}
+	window.localStorage.setItem('usedLists', JSON.stringify(usedLists));
+}
+
 function itemIdToIndex(items, id) {
 	const hasIdX = (item) => item.id == id;
 	return items.findIndex(hasIdX);
@@ -50,14 +77,16 @@ async function initExisting() {
 
 	await authorize(username, listPassword);
 
-		list = await client.collection('lists').getOne(list.id, {
-			expand: 'items'
-		});
+	list = await client.collection('lists').getOne(list.id, {
+		expand: 'items'
+	});
 
-		listNameStore.set(list.name);
+	listNameStore.set(list.name);
+	addUsedList(list.id, list.name, list.username, listPassword);
 
-		if ('expand' in list) {
-			if ('items' in list.expand) {
+
+	if ('expand' in list) {
+		if ('items' in list.expand) {
 			itemsStore.update((items) => list.expand.items);
 		}
 	}
@@ -67,7 +96,7 @@ async function initExisting() {
 	}
 
 	// Subscribe to list record in case new items are added or the list is deleted.
-	client.collection('lists').subscribe(list.id, async function (event) {
+	client.collection('lists').subscribe(list.id, function (event) {
 		if (event.action == 'update') {
 			console.log('List update! Adding event to queue…');
 			subscriptionEventQueue.push(event);
@@ -157,7 +186,15 @@ async function authorizeIfIdChanged(username, listPassword) {
 
 async function renameList(name) {
 	await authorizeIfIdChanged(list.username, listPassword);
-	client.collection('lists').update(list.id, { name: name });
+	await client.collection('lists').update(list.id, { name: name });
+
+	let usedLists = JSON.parse(window.localStorage.getItem('usedLists'));
+	usedLists.forEach((usedList, i, array) => {
+		if (usedList.id == list.id) {
+			array[i].name = name;
+		}
+	});
+	window.localStorage.setItem('usedLists', JSON.stringify(usedLists));
 }
 
 function editListName() {
@@ -271,6 +308,16 @@ async function deleteList() {
 		await authorizeIfIdChanged(list.username, listPassword);
 		await client.collection('lists').delete(list.id);
 
+		// Remove deleted list from usedLists
+		let usedLists = JSON.parse(window.localStorage.getItem('usedLists'));
+		usedLists.forEach((usedList, i, array) => {
+			if (usedList.id == list.id) {
+				array.splice(i, 1)
+			}
+		});
+		window.localStorage.setItem('usedLists', JSON.stringify(usedLists));
+
+		// Needed because the list subscription doesn't report delete events for some reason. This also means that only the current tab viewing the list will be redirected to the startpage, not other tabs from the current or other browsers.
 		window.location.replace('/');
 	}
 }
@@ -289,6 +336,10 @@ function generatePassword() {
 		.join('');
 }
 
+function listUrl(username, password) {
+	return `/lists.html?list=${username}&password=${password}`;
+}
+
 async function createList() {
 	listPassword = generatePassword();
 	const data = {
@@ -302,9 +353,11 @@ async function createList() {
 	console.log('Password:', listPassword);
 	await authorize(list.username, listPassword);
 
-	let url = `/lists.html?list=${list.username}&password=${listPassword}`;
+	let url = listUrl(list.username, listPassword);
 	console.log('Going just created list:', url);
 	window.location.replace(url);
+
+	addUsedList(list.id, list.name, list.username, listPassword);
 }
 
 async function createItem(item) {
@@ -429,6 +482,7 @@ export {
 	anyCheckedItems,
 	deleteCheckedItems,
 	deleteList,
+	listUrl,
 	createList,
 	createItem,
 	importItemsFiles,
