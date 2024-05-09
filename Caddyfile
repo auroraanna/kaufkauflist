@@ -18,12 +18,14 @@ http://localhost:60000 {
 			Referrer-Policy no-referrer
 			X-Content-Type-Options nosniff
 		}
+		header {
+			Content-Security-Policy "frame-ancestors 'none';"
+			Permissions-Policy "accelerometer=(), autoplay=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=()"
+		}
 		header /_app/immutable/* {
 			Cache-Control "max-age=31536000, immutable" # Files in this directory get a new hash suffix when they are updated, meaning they can be cached for a long time.
 			-ETag # ETag header is probably not necessary for files cached that long
 		}
 	}
-	header {
-		Permissions-Policy "accelerometer=(), autoplay=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=()"
-	}
+
 }

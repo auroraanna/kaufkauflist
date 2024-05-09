@@ -59,6 +59,8 @@ Then you point a web server's root to `/share/kaufkauflist` of the `kaufkauflist
 
 Take the `Caddyfile` as a guide on what is required from your web server to make this app run. Just choosing Caddy, of course, makes this easier since you can just flesh out the provided `Caddyfile`.
 
+In any case, make sure to include `frame-ancestors 'none';` in the CSP to mitigate click-jacking attacks! Including this in the HTML CSP is not supported.
+
 For the database, follow the same steps as in [Database](#database). Make sure to import the `pb_schema.json` from `/share/pocketbase/pb_schema.json` of the `kaufkauflist` package's derivation (e.g. `/nix/store/apcl8vnmal3kph75miff85d840fxxw4n-kaufkauflist-1.0.0/share/pocketbase/pb_schema.json`).
 
 ## License

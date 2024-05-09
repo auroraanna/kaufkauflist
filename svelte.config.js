@@ -12,8 +12,7 @@ const config = {
 				'script-src': ['self'],
 				'connect-src': ['self'],
 				'form-action': ['self'],
-				'base-uri': ['self'],
-				'frame-ancestors': ['none']
+				'base-uri': ['self']
 			}
 		}
 	}
