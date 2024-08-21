@@ -34,14 +34,44 @@
 		overflow-wrap: anywhere;
 		background-color: var(--background);
 		color: var(--on_background);
+		width: 100%;
+	}
+
+	:global(body) {
+		display: flex;
+		flex-direction: column;
+		gap: 1em;
 		width: fit-content;
 	}
 
+	:global(header) {
+		display: flex;
+		flex-direction: column;
+		gap: 3pt;
+	}
+
+	:global(header, main, footer) {
+		display: flex;
+		flex-direction: column;
+		gap: 3pt;
+	}
+
 	:global(footer) {
-		margin-top: 1rem;
 		border-top-width: 1pt;
 		border-top-style: solid;
 		border-top-color: var(--on_background);
+	}
+
+	:global(h1) {
+		margin-block: 0rem;
+	}
+
+	:global(li) {
+		margin-bottom: 4pt;
+	}
+
+	:global(details > div) {
+		margin-top: 6pt;
 	}
 
 	:global(a) {
@@ -65,31 +95,33 @@
 		vertical-align: middle;
 	}
 
+	:global(summary, button, select) {
+		font-size: 1.1rem;
+	}
+
+	:global(button, select) {
+		min-width: 48px;
+		min-height: 48px;
+		border-radius: 0.2rem;
+		border-width: 0.1rem;
+		border-style: solid;
+		display: inline-flex;
+		width: fit-content;
+		vertical-align: middle;
+		justify-content: center;
+		align-items: center;
+	}
+
 	:global(select) {
 		background-color: var(--on_select);
 		color: var(--select);
 		border-color: var(--select);
 	}
 
-	:global(button),
-	:global(select) {
-		min-width: 48px;
-		min-height: 48px;
-		font-size: 1.1rem;
-		border-radius: 0.2rem;
-		border-width: 0.1rem;
-		border-style: solid;
-		margin: 0.2rem;
-	}
-
 	:global(button) {
 		background-color: var(--on_button);
 		color: var(--button);
 		border-color: var(--button);
-		vertical-align: middle;
-		display: inline-flex;
-		justify-content: center;
-		align-items: center;
 	}
 
 	:global(button:active) {
@@ -137,6 +169,24 @@
 		border-width: 0.1rem;
 		border-style: solid;
 		border-color: var(--error);
+	}
+
+	:global(.rows) {
+		display: flex;
+		flex-direction: column;
+		flex-wrap: wrap;
+		gap: 6pt;
+	}
+
+	:global(.buttongroup) {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 6pt;
+	}
+
+	:global(#home) {
+		font-size: 1.2rem;
 	}
 
 	:global(:root) {
