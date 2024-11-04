@@ -226,4 +226,10 @@
 			--on_error: #8c1c18;
 		}
 	}
+
+	@media print {
+		:global(.no-print, .no-print *) {
+			display: none;
+		}
+	}
 </style>

@@ -30,7 +30,7 @@
 <fieldset>
 	<legend>Items</legend>
 
-	<form on:submit|preventDefault={() => handleSubmit()}>
+	<form class="no-print" on:submit|preventDefault={() => handleSubmit()}>
 		<label for="search">Search box</label>
 		<input
 			type="search"
@@ -63,6 +63,7 @@
 					/>
 					<label for={item.id}>{item.name}</label>
 					<button
+						class="no-print"
 						on:click={() => editItemName(item)}
 						aria-label="Edit item's name"
 						title="Edit item's name"
@@ -70,6 +71,7 @@
 						✏️
 					</button>
 					<button
+						class="no-print"
 						on:click={() => deleteItem(item.id)}
 						aria-label="Delete item"
 						title="Delete item"

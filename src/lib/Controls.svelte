@@ -31,7 +31,7 @@
 	$: secondSortOrderStore.set(secondSortOrder);
 </script>
 
-<fieldset class="rows">
+<fieldset class="rows no-print">
 	<legend>Controls</legend>
 
 	<div class="buttongroup">

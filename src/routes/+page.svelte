@@ -7,6 +7,6 @@
 	<title>kaufkauflist</title>
 </svelte:head>
 
-<button on:click={() => createList()}>Create list</button>
+<button class="no-print" on:click={() => createList()}>Create list</button>
 
 <UsedLists />

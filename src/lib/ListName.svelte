@@ -22,6 +22,7 @@
 <div id="listName">
 	<h1>{listNameOrPlaceholder}</h1>
 	<button
+		class="no-print"
 		on:click={() => editListName()}
 		title="Edit list's name"
 	>
