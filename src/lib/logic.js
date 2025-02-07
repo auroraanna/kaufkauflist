@@ -19,6 +19,8 @@ itemsStore.subscribe((data) => {
 	console.log('Updated itemsStore!');
 });
 
+let deletedList = false;
+
 const sortOrders = ['recently updated', 'alphabetical'];
 let secondSortOrder = 0;
 let secondSortOrderStore = writable(secondSortOrder);
@@ -104,7 +106,19 @@ async function initExisting() {
 		}
 
 		if (event.action == 'delete') {
-			window.location.replace('/');
+			// Remove deleted list from usedLists
+			let usedLists = JSON.parse(window.localStorage.getItem('usedLists'));
+			usedLists.forEach((usedList, i, array) => {
+				if (usedList.id == list.id) {
+					usedLists.splice(i, 1)
+				}
+			});
+			window.localStorage.setItem('usedLists', JSON.stringify(usedLists));
+
+			if (!deletedList) {
+				// This should only be seen by clients that did not delete the list themselves because the client that did delete the list will be redirected quickly.
+				window.alert("This list has been deleted. If someone else did this accidentally, you can download the list as JSON.");
+			}
 		}
 	});
 
@@ -306,18 +320,9 @@ async function deleteCheckedItems(items) {
 async function deleteList() {
 	if (confirm('Do you really want to delete the list? You have no way of recovering it.')) {
 		await authorizeIfIdChanged(list.username, listPassword);
+		deletedList = true;
 		await client.collection('lists').delete(list.id);
 
-		// Remove deleted list from usedLists
-		let usedLists = JSON.parse(window.localStorage.getItem('usedLists'));
-		usedLists.forEach((usedList, i, array) => {
-			if (usedList.id == list.id) {
-				array.splice(i, 1)
-			}
-		});
-		window.localStorage.setItem('usedLists', JSON.stringify(usedLists));
-
-		// Needed because the list subscription doesn't report delete events for some reason. This also means that only the current tab viewing the list will be redirected to the startpage, not other tabs from the current or other browsers.
 		window.location.replace('/');
 	}
 }
