@@ -25,7 +25,7 @@ OPTIONS:
 	const pb = new PocketBase(host);
 
 	// Authenticates as admin.
-	await pb.admins.authWithPassword(email, password);
+	await pb.collection("_superusers").authWithPassword(email, password);
 
 	const lists = await pb.collection('lists').getFullList(500, {
 		expand: 'items'
@@ -45,14 +45,9 @@ OPTIONS:
 	// Cleans up the lists collection.
 	for (const list of lists) {
 		const then = Date.parse(list.updated);
-		if (then <= oneWeekAgo && list.items.length == 0) {
-			console.log(`List ${list.id} was updated more than a week ago and is empty, deleting…`);
+		if (then <= oneMonthAgo && list.items.length == 0 && (list.name == null || list.name == "")) {
+			console.log(`List ${list.id} was updated more than one month ago, has an empty list title and no items, deleting…`);
 			deleteList(list.id);
-		} else if (then <= oneMonthAgo) {
-			console.log(`List ${list.id} was updated more than one month ago, deleting…`);
-			deleteList(list.id);
-		} else {
-			console.log(`List ${list.id} was updated less than one week ago, doing nothing.`);
 		}
 	}
 
